@@ -201,24 +201,104 @@ Adam Bartonicek
 <li>The (bijective) partition model is useful in interactive graphics</li>
 <li>Provides unambiguous visual mapping in linked selection:
 <ul>
-<li><em>If I click a bar in a plot, only that bar gets highlighted</em> (not the case with non-disjoint data subsets)</li>
+<li><em>If I click a bar in a plot, only that bar gets highlighted</em> <br> (not the case with non-disjoint data subsets)</li>
 </ul></li>
 </ul>
 
-<img data-src="presentation_files/figure-revealjs/unnamed-chunk-1-1.png" width="2880" class="r-stretch"><ul>
+<img data-src="presentation_files/figure-revealjs/unnamed-chunk-1-1.png" class="quarto-figure quarto-figure-center r-stretch" width="4500"><ul>
 <li>Also useful for querying: geom/subset information is independent</li>
 </ul>
 </section>
-<section id="plots-summaries-and-aesthetic-mapping" class="slide level2">
-<h2>Plots, summaries, and aesthetic mapping</h2>
+<section id="plots-summaries-and-aesthetics" class="slide level2">
+<h2>Plots, summaries, and aesthetics</h2>
 <ul>
 <li>We rarely plot raw data - instead, we often summarize/aggregate</li>
-<li>Also, we transform the summaries into aesthetics <br> (via scales/coordinate systems)</li>
+<li>Also, we encode the summaries into aesthetics <br> (via scales/coordinate systems)</li>
 <li>Therefore, the full mapping is a <em>composition</em> of several maps:</li>
 </ul>
 <p><span class="math display">\[\text{Data subsets} \to \text{Summaries} \to \text{Aesthetics} \to \text{Geometric objects}\]</span></p>
 <ul>
-<li>Maps/functions can preserve properties of the underlying structure</li>
+<li><em>The domains/codomains often have structure which the maps may or may not preserve</em></li>
+</ul>
+</section>
+<section id="example-stacking-1" class="slide level2">
+<h2>Example: Stacking 1</h2>
+<ul>
+<li>The data partition can have a hierarchical structure
+<ul>
+<li>Data subsets are made up of smaller data subsets</li>
+</ul></li>
+<li>Example: stacked barplot made up of segments</li>
+<li>To be a valid representation, the visualization map (plot) should preserve this structure
+<ul>
+<li>I.e. aggregation and encoding also need to be structure-preserving</li>
+</ul></li>
+</ul>
+</section>
+<section id="example-stacking-2" class="slide level2">
+<h2>Example: Stacking 2</h2>
+<ul>
+<li>Suppose:</li>
+</ul>
+<div style="margin-top: -40px; margin-bottom: -40px;">
+<p><span class="math display">\[\qquad \text{Bar subset} = \text{Gray subset} \cup \text{Blue subset}\]</span></p>
+</div>
+<ul>
+<li>We want:</li>
+</ul>
+<div style="margin-top: -40px; margin-bottom: -40px;">
+<p><span class="math display">\[\qquad \text{Bar} = \text{Stack}(\text{Gray segment}, \text{Blue segment})\]</span></p>
+</div>
+
+<img data-src="presentation_files/figure-revealjs/unnamed-chunk-2-1.png" class="quarto-figure quarto-figure-center r-stretch" width="225"></section>
+<section id="example-stacking-3" class="slide level2">
+<h2>Example: Stacking 3</h2>
+<ul>
+<li>However, the mapping should preserve salient visual properties</li>
+<li>E.g. bar height:</li>
+</ul>
+<div style="margin-top: -30px; margin-bottom: -30px; font-size: 90%;">
+<p><span class="math display">\[\text{Height(Bar)} = \text{Height(Stack(Blue segment, Red segment))}\]</span></p>
+</div>
+<ul>
+<li>However, this is not always the case
+<ul>
+<li>Stacking sums is fine, stacking other is meaningless</li>
+</ul></li>
+</ul>
+</section>
+<section id="structure-preserving-maps-functors" class="slide level2">
+<h2>Structure-preserving maps: Functors</h2>
+<ul>
+<li>In category theory, structure-preserving maps are known as functors</li>
+<li>Specifically, functors preserve function composition:</li>
+</ul>
+<p><span class="math display">\[F(f ; g) = F(f) ; F(g)\]</span></p>
+</section>
+<section id="functors-and-visualization" class="slide level2">
+<h2>Functors and visualization</h2>
+<p><span class="math display">\[F(f ; g) = F(f) ; F(g)\]</span></p>
+<ul>
+<li>In our case, we can think of <span class="math inline">\(f\)</span> and <span class="math inline">\(g\)</span> as taking a union with some fixed set, e.g.&nbsp;<span class="math inline">\(f(x) = x \cup A\)</span> and <span class="math inline">\(g(x) = x \cup B\)</span> (where <span class="math inline">\(x\)</span> can be <span class="math inline">\(\varnothing\)</span>)</li>
+<li><span class="math inline">\(F\)</span> can be the aggregation and encoding maps</li>
+<li>When both aggregation and encoding are functors, then the whole visualization map (plot) is a functor as well (functors compose):</li>
+</ul>
+<p><span class="math display">\[G(F(f ; g)) = G(F(f)) ; G(F(g))\]</span></p>
+</section>
+<section id="reasoning-about-graphics" class="slide level2">
+<h2>Reasoning about graphics</h2>
+<ul>
+<li>Practically, functors allow us to reason about composition of summary statistics and graphics</li>
+<li>For instance, sums and maximums compose:
+<ul>
+<li><span class="math inline">\(\text{sum}(A \cup B \cup C) = \text{sum}(A) + \text{sum}(B) + \text{sum}(C)\)</span></li>
+<li><span class="math inline">\(\text{max}(A \cup B \cup C) = \text{max}(\{\text{max}(A), \text{max}(B), \text{max}(C)\})\)</span></li>
+</ul></li>
+<li>However, e.g.&nbsp;means do not:
+<ul>
+<li><span class="math inline">\(\text{mean}(A \cup B \cup C) \neq \text{mean}(\{\text{mean}(A), \text{mean}(B), \text{mean}(C)\})\)</span></li>
+</ul></li>
+<li></li>
 </ul>
 </section>
 <section id="preserving-properties" class="slide level2">

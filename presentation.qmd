@@ -7,6 +7,8 @@ format:
 editor: visual
 editor_options: 
   chunk_output_type: console
+execute:
+  fig-dpi: 150
 ---
 
 ## 
@@ -51,23 +53,26 @@ $$\text{Data subsets} \to \text{Geometric objects}$$
 
 - The (bijective) partition model is useful in interactive graphics
 - Provides unambiguous visual mapping in linked selection:
-  - *If I click a bar in a plot, only that bar gets highlighted* (not the case with non-disjoint data subsets)
+  - *If I click a bar in a plot, only that bar gets highlighted* <br> (not the case with non-disjoint data subsets)
   
 ```{r}
 #| echo: false
 #| fig-width: 30
+#| fig-align: "center"
 library(ggplot2)
 library(patchwork)
 
 theme_set(
-  theme_minimal() + theme(
+  theme_bw() + theme(
     panel.grid = element_blank(),
     axis.text = element_blank(),
     axis.title.x = element_blank(),
-    axis.title.y = element_blank()
+    axis.title.y = element_blank(),
+    axis.ticks = element_blank(),
+    panel.border = element_blank()
   ))
 
-
+mtcars$am <- factor(mtcars$am)
 
 p1 <- ggplot(mtcars, aes(cyl, mpg)) +
   geom_bar(stat = "summary", fun = "sum", fill = "grey80") +
@@ -88,7 +93,7 @@ p2 <- ggplot(mtcars, aes(cyl, mpg, fill = cyl == 4)) +
   scale_fill_manual(values=c("grey80", "steelblue")) +
   guides(fill = "none") 
 
-mtcars$highlight <- mtcars$am | mtcars$cyl == 4
+mtcars$highlight <- mtcars$am == "1" | mtcars$cyl == 4
 
 p3 <- ggplot(mtcars, aes(cyl, mpg, fill = highlight)) +
   geom_bar(stat = "summary", fun = "sum") +
@@ -101,15 +106,88 @@ p1 + plot_spacer() + p2 + p12 + p1 + plot_spacer() + p3 +
   
 - Also useful for querying: geom/subset information is independent
 
-## Plots, summaries, and aesthetic mapping
+## Plots, summaries, and aesthetics
 
 - We rarely plot raw data - instead, we often summarize/aggregate
-- Also, we transform the summaries into aesthetics <br> (via scales/coordinate systems)
+- Also, we encode the summaries into aesthetics <br> (via scales/coordinate systems)
 - Therefore, the full mapping is a *composition* of several maps:
 
 $$\text{Data subsets} \to \text{Summaries} \to \text{Aesthetics} \to \text{Geometric objects}$$
 
-- Maps/functions can preserve properties of the underlying structure
+- *The domains/codomains often have structure which the maps may or may not preserve*
+
+## Example: Stacking 1
+
+- The data partition can have a hierarchical structure
+  - Data subsets are made up of smaller data subsets
+- Example: stacked barplot made up of segments
+- To be a valid representation, the visualization map (plot) should preserve this structure
+  - I.e. aggregation and encoding also need to be structure-preserving
+
+## Example: Stacking 2 {}
+
+- Suppose: 
+
+::: {style="margin-top: -40px; margin-bottom: -40px;"}
+$$\qquad \text{Bar subset} = \text{Gray subset} \cup \text{Blue subset}$$
+:::
+
+- We want: 
+
+::: {style="margin-top: -40px; margin-bottom: -40px;"}
+$$\qquad \text{Bar} = \text{Stack}(\text{Gray segment}, \text{Blue segment})$$
+:::
+
+```{r}
+#| echo: false
+#| fig-height: 1
+#| fig-width: 1.5
+#| fig-align: "center"
+
+ggplot(mtcars, aes(cyl, mpg, fill = am)) +
+  geom_bar(stat = "summary", fun = "sum") +
+  scale_fill_manual(values=c("grey80", "steelblue")) +
+  guides(fill = "none") 
+```
+
+## Example: Stacking 3
+
+- However, the mapping should preserve salient visual properties
+- E.g. bar height:
+
+::: {style="margin-top: -30px; margin-bottom: -30px; font-size: 90%;"}
+$$\text{Height(Bar)} = \text{Height(Stack(Blue segment, Red segment))}$$
+:::
+
+- However, this is not always the case
+  - Stacking sums is fine, stacking other is meaningless
+
+## Structure-preserving maps: Functors
+
+- In category theory, structure-preserving maps are known as functors
+- Specifically, functors preserve function composition:
+
+$$F(f ; g) = F(f) ; F(g)$$
+
+## Functors and visualization
+
+$$F(f ; g) = F(f) ; F(g)$$
+
+- In our case, we can think of $f$ and $g$ as taking a union with some fixed set, e.g. $f(x) = x \cup A$ and $g(x) = x \cup B$ (where $x$ can be $\varnothing$)
+- $F$ can be the aggregation and encoding maps
+- When both aggregation and encoding are functors, then the whole visualization map (plot) is a functor as well (functors compose):
+
+$$G(F(f ; g)) = G(F(f)) ; G(F(g))$$
+
+## Reasoning about graphics
+
+- Practically, functors allow us to reason about composition of summary statistics and graphics
+- For instance, sums and maximums compose:
+  - $\text{sum}(A \cup B \cup C) = \text{sum}(A) + \text{sum}(B) + \text{sum}(C)$
+  - $\text{max}(A \cup B \cup C) = \text{max}(\{\text{max}(A), \text{max}(B), \text{max}(C)\})$
+- However, e.g. means do not:
+  - $\text{mean}(A \cup B \cup C) \neq \text{mean}(\{\text{mean}(A), \text{mean}(B), \text{mean}(C)\})$
+- 
 
 ## Preserving properties
 
