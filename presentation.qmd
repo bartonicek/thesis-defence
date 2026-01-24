@@ -1,0 +1,134 @@
+---
+title: "The Fabric of Interactive Graphics"
+author: "Adam Bartonicek"
+format: 
+  revealjs:
+    theme: [default, styles.scss]
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+## 
+
+## Interaction vs. modularity
+
+-   "Classical" IDV systems: deep interactivity but less flexible
+-   Modern GoG-based IDV systems: highly customizable but usually only shallow interactive features out-of-the-box\
+-   Nominal vs. composition-based approach to graphics:
+    -   *Scatterplot* vs.
+    -   *Plot with continuous x- and y- encodings and point geometry*
+
+## Why is it challenging to combine the GoG modularity with interactivivity?
+
+## Graphics and structure
+
+-   A plot is not just a picture - instead, it is a graphical representation of structured information
+
+## Plots as maps
+
+- A plot is a map (function) from data to a graphical display (represented on computer screen/paper):
+
+$$\text{Data} \to \text{Graphics}$$
+
+- *Can this map be any old function?*
+  - Plots "in the wild" exhibit a number of regular properties/features
+  - Many in static plots, interactivity adds additional constraints
+
+## Plots as partitions
+
+- Useful to think about plots as *partitions*:
+    -   A surjective collection of disjoint (and non-empty) subsets
+    -   = *Each point, bar, or line represents a distinct set of cases/rows, and together the objects cover the whole data space (bijection)*
+
+$$\text{Data subsets} \to \text{Geometric objects}$$
+    
+-   Some exceptions:
+    -   2D KDE plots (multiple isopleths map to same datapoints)
+    -   Graphical deficiencies (e.g. overplotting)
+
+## Plots as partitions and interactivity
+
+- The (bijective) partition model is useful in interactive graphics
+- Provides unambiguous visual mapping in linked selection:
+  - *If I click a bar in a plot, only that bar gets highlighted* (not the case with non-disjoint data subsets)
+  
+```{r}
+#| echo: false
+#| fig-width: 30
+library(ggplot2)
+library(patchwork)
+
+theme_set(
+  theme_minimal() + theme(
+    panel.grid = element_blank(),
+    axis.text = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  ))
+
+
+
+p1 <- ggplot(mtcars, aes(cyl, mpg)) +
+  geom_bar(stat = "summary", fun = "sum", fill = "grey80") +
+  geom_bar(data=subset(mtcars, cyl == 4),
+           stat = "summary", fun = "sum", fill = "grey80", 
+           col="grey20", linetype="dashed", width = 1.8, size=1.5) +
+  annotate("segment", x=3.9, y=230, xend=4.1, yend=210, 
+           arrow=arrow(type = "closed", length = unit(0.1, "in")),
+           lwd=1.5, linejoin="mitre") +
+  guides(linetype="none")
+
+p12 <- ggplot(mtcars, aes(cyl, mpg)) +
+  geom_bar(stat = "summary", fun = "sum", alpha=0) +
+  annotate("text", x = 6, y = 150, label = "vs.", size=14)
+
+p2 <- ggplot(mtcars, aes(cyl, mpg, fill = cyl == 4)) +
+  geom_bar(stat = "summary", fun = "sum") +
+  scale_fill_manual(values=c("grey80", "steelblue")) +
+  guides(fill = "none") 
+
+mtcars$highlight <- mtcars$am | mtcars$cyl == 4
+
+p3 <- ggplot(mtcars, aes(cyl, mpg, fill = highlight)) +
+  geom_bar(stat = "summary", fun = "sum") +
+  scale_fill_manual(values=c("grey80", "steelblue")) +
+  guides(fill = "none") 
+
+p1 + plot_spacer() + p2 + p12 + p1 + plot_spacer() + p3 + 
+  plot_layout(nrow=1, widths = c(1, 0.2, 1, 1, 1, 0.2, 1))
+```
+  
+- Also useful for querying: geom/subset information is independent
+
+## Plots, summaries, and aesthetic mapping
+
+- We rarely plot raw data - instead, we often summarize/aggregate
+- Also, we transform the summaries into aesthetics <br> (via scales/coordinate systems)
+- Therefore, the full mapping is a *composition* of several maps:
+
+$$\text{Data subsets} \to \text{Summaries} \to \text{Aesthetics} \to \text{Geometric objects}$$
+
+- Maps/functions can preserve properties of the underlying structure
+
+## Preserving properties
+
+-   However, perhaps we want plots to be more than just *any* function
+-   Maps can preserve or fail to preserve certain properties
+-   If partition is the fundamental model, then the mapping (plot) should preserve the properties of sets and set operations
+-   Statistics and graphics should behave like sets
+
+## Set union and associativity
+
+-   One fundamental thing we can do with sets is to merge them (union)
+-   Set union has several important properties, including associativity:
+
+$$A \cup (B \cup C) = (A \cup B) \cup C = A \cup B \cup C$$
+
+-   *"If we gather up the stuff contained in several sets, we end up with the same result regardless of what order we do it in"*
+
+## Preserving set union
+
+-   If we want to interpret the geometric objects in our plots as sets, they need to preserve associativity
+-   To do this, not just the geometric objects but also the underlying summaries need to be associative
+-   Counterexample: stacking
