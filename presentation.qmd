@@ -9,19 +9,27 @@ editor_options:
   chunk_output_type: console
 execute:
   fig-dpi: 150
+bibliography: references.bib
 ---
 
-## 
+## Initial evolution of thesis
 
-## Interaction vs. modularity
+- During master's: implement a new interactive data visualization library, building on `iplots` [@urbanek2003; @urbanek2011]
+- Wanted to incorporate ideas from the Grammar of Graphics <br> [GoG, @wilkinson2012]
+- Was also interested in functional programming at the time
+- Realized many problems parallel those that we deal with in graphics
+- This eventually lead me to category theory [@fong2019]
 
--   "Classical" IDV systems: deep interactivity but less flexible
--   Modern GoG-based IDV systems: highly customizable but usually only shallow interactive features out-of-the-box\
--   Nominal vs. composition-based approach to graphics:
-    -   *Scatterplot* vs.
-    -   *Plot with continuous x- and y- encodings and point geometry*
+## Historical split in interactive graphics
 
-## Why is it challenging to combine the GoG modularity with interactivivity?
+-   "Classical" IDV systems
+    - Deep interactivity, less flexible
+    - Nominal style: *scatterplot, barplot, ...*
+-   Modern GoG-based IDV systems: 
+    - Highly customizable but more shallow interactivity out-of-the-box
+    - Compositional style: *plot with continuous x- and y- encodings and point geometry ...*
+
+## Why is it challenging to combine the GoG modularity with interactivivity? {.center}
 
 ## Graphics and structure
 
@@ -34,24 +42,25 @@ execute:
 $$\text{Data} \to \text{Graphics}$$
 
 - *Can this map be any old function?*
-  - Plots "in the wild" exhibit a number of regular properties/features
-  - Many in static plots, interactivity adds additional constraints
+  - Plots can be misleading representations [@tufte2001; @cairo2014]
+  - Faithful plots "in the wild" exhibit many regular features
+  - Interactivity adds additional constraints
 
 ## Plots as partitions
 
-- Useful to think about plots as *partitions*:
-    -   A surjective collection of disjoint (and non-empty) subsets
-    -   = *Each point, bar, or line represents a distinct set of cases/rows, and together the objects cover the whole data space (bijection)*
+- Useful idea: geoms as sets, plots as *partitions*:
+    -   A surjective collection of disjoint subsets
+    -   *= Each point, bar, or line represents a distinct set of cases/rows, and together the objects cover the whole data space (bijection)*
 
 $$\text{Data subsets} \to \text{Geometric objects}$$
     
 -   Some exceptions:
-    -   2D KDE plots (multiple isopleths map to same datapoints)
+    -   2D KDE plots (multiple isopleths map to the same datapoints)
     -   Graphical deficiencies (e.g. overplotting)
 
 ## Plots as partitions and interactivity
 
-- The (bijective) partition model is useful in interactive graphics
+- The (bijective) partition model is well-suited for interactive graphics
 - Provides unambiguous visual mapping in linked selection:
   - *If I click a bar in a plot, only that bar gets highlighted* <br> (not the case with non-disjoint data subsets)
   
@@ -108,23 +117,24 @@ p1 + plot_spacer() + p2 + p12 + p1 + plot_spacer() + p3 +
 
 ## Plots, summaries, and aesthetics
 
-- We rarely plot raw data - instead, we often summarize/aggregate
-- Also, we encode the summaries into aesthetics <br> (via scales/coordinate systems)
+- We rarely plot raw data: instead, we often summarize/aggregate
+- Also encode the summaries into aesthetics (scales/coord. systems)
 - Therefore, the full mapping is a *composition* of several maps:
 
 $$\text{Data subsets} \to \text{Summaries} \to \text{Aesthetics} \to \text{Geometric objects}$$
 
-- *The domains/codomains often have structure which the maps may or may not preserve*
+- *The domains/codomains of these maps often have structure which the maps may or may not preserve*
 
 ## Example: Stacking 1
 
 - The data partition can have a hierarchical structure
-  - Data subsets are made up of smaller data subsets
-- Example: stacked barplot made up of segments
-- To be a valid representation, the visualization map (plot) should preserve this structure
+  - = Data subsets made up of smaller subsets
+  - E.g. stacked bar made up of segments, pie chart
+  - *Not purely visual - segments represent data information*
+- To be a valid, the map should preserve underlying structure
   - I.e. aggregation and encoding also need to be structure-preserving
 
-## Example: Stacking 2 {}
+## Example: Stacking 2
 
 - Suppose: 
 
@@ -152,42 +162,43 @@ ggplot(mtcars, aes(cyl, mpg, fill = am)) +
 
 ## Example: Stacking 3
 
-- However, the mapping should preserve salient visual properties
+- The mapping should preserve salient visual properties
 - E.g. bar height:
 
-::: {style="margin-top: -30px; margin-bottom: -30px; font-size: 90%;"}
-$$\text{Height(Bar)} = \text{Height(Stack(Blue segment, Red segment))}$$
+::: {style="margin-top: -15px; margin-bottom: -15px; font-size: 90%;"}
+$$\text{Height(Bar subset)} = \text{Height(Stack(Blue subset, Red subset))}$$
 :::
 
-- However, this is not always the case
-  - Stacking sums is fine, stacking other is meaningless
+- Not always the case:
+  - *Stacking bars that represent counts, sums, or percentages is fine, but a stacked bar chart where bars show average values is generally meaningless." [@wills2011, p. 112].*
 
 ## Structure-preserving maps: Functors
 
-- In category theory, structure-preserving maps are known as functors
+- In category theory, structure-preserving maps are known as functors [@fong2019]
 - Specifically, functors preserve function composition:
 
 $$F(f ; g) = F(f) ; F(g)$$
 
 ## Functors and visualization
 
-$$F(f ; g) = F(f) ; F(g)$$
-
 - In our case, we can think of $f$ and $g$ as taking a union with some fixed set, e.g. $f(x) = x \cup A$ and $g(x) = x \cup B$ (where $x$ can be $\varnothing$)
 - $F$ can be the aggregation and encoding maps
-- When both aggregation and encoding are functors, then the whole visualization map (plot) is a functor as well (functors compose):
+
+$$F(f ; g) = F(f) ; F(g)$$
+
+- When both aggregation and encoding are functors, then the whole visualization map is a functor as well (functors compose):
 
 $$G(F(f ; g)) = G(F(f)) ; G(F(g))$$
 
-## Reasoning about graphics
+## Functors, summaries, and monoids
 
-- Practically, functors allow us to reason about composition of summary statistics and graphics
+- With functors we can reason about composing summaries and graphics
 - For instance, sums and maximums compose:
   - $\text{sum}(A \cup B \cup C) = \text{sum}(A) + \text{sum}(B) + \text{sum}(C)$
   - $\text{max}(A \cup B \cup C) = \text{max}(\{\text{max}(A), \text{max}(B), \text{max}(C)\})$
 - However, e.g. means do not:
   - $\text{mean}(A \cup B \cup C) \neq \text{mean}(\{\text{mean}(A), \text{mean}(B), \text{mean}(C)\})$
-- 
+- If we want to preserve set union, the specific class of a functor which does this is called a *monoid*
 
 ## Preserving properties
 
@@ -210,3 +221,5 @@ $$A \cup (B \cup C) = (A \cup B) \cup C = A \cup B \cup C$$
 -   If we want to interpret the geometric objects in our plots as sets, they need to preserve associativity
 -   To do this, not just the geometric objects but also the underlying summaries need to be associative
 -   Counterexample: stacking
+
+## References

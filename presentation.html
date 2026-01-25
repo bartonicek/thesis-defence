@@ -28,7 +28,27 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
-  </style>
+    /* CSS for citations */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+      margin-bottom: 0em;
+    }
+    .hanging-indent div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }  </style>
   <link rel="stylesheet" href="presentation_files/libs/revealjs/dist/theme/quarto-29a56d25e2077b9adde6439ef5f2e6e6.css">
   <link href="presentation_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="presentation_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
@@ -138,23 +158,32 @@ Adam Bartonicek
 </div>
 
 </section>
-<section id="section" class="slide level2">
-<h2></h2>
+<section id="initial-evolution-of-thesis" class="slide level2">
+<h2>Initial evolution of thesis</h2>
+<ul>
+<li>During master’s: implement a new interactive data visualization library, building on <code>iplots</code> <span class="citation" data-cites="urbanek2003 urbanek2011">(<a href="#/references" role="doc-biblioref" onclick="">Urbanek and Theus 2003</a>; <a href="#/references" role="doc-biblioref" onclick="">Urbanek 2011</a>)</span></li>
+<li>Wanted to incorporate ideas from the Grammar of Graphics <br> <span class="citation" data-cites="wilkinson2012">(GoG, <a href="#/references" role="doc-biblioref" onclick="">Wilkinson 2012</a>)</span></li>
+<li>Was also interested in functional programming at the time</li>
+<li>Realized many problems parallel those that we deal with in graphics</li>
+<li>This eventually lead me to category theory <span class="citation" data-cites="fong2019">(<a href="#/references" role="doc-biblioref" onclick="">Fong and Spivak 2019</a>)</span></li>
+</ul>
 </section>
-<section id="interaction-vs.-modularity" class="slide level2">
-<h2>Interaction vs.&nbsp;modularity</h2>
+<section id="historical-split-in-interactive-graphics" class="slide level2">
+<h2>Historical split in interactive graphics</h2>
 <ul>
-<li>“Classical” IDV systems: deep interactivity but less flexible</li>
-<li>Modern GoG-based IDV systems: highly customizable but usually only shallow interactive features out-of-the-box<br>
-</li>
-<li>Nominal vs.&nbsp;composition-based approach to graphics:
+<li>“Classical” IDV systems
 <ul>
-<li><em>Scatterplot</em> vs.</li>
-<li><em>Plot with continuous x- and y- encodings and point geometry</em></li>
+<li>Deep interactivity, less flexible</li>
+<li>Nominal style: <em>scatterplot, barplot, …</em></li>
+</ul></li>
+<li>Modern GoG-based IDV systems:
+<ul>
+<li>Highly customizable but more shallow interactivity out-of-the-box</li>
+<li>Compositional style: <em>plot with continuous x- and y- encodings and point geometry …</em></li>
 </ul></li>
 </ul>
 </section>
-<section id="why-is-it-challenging-to-combine-the-gog-modularity-with-interactivivity" class="slide level2">
+<section id="why-is-it-challenging-to-combine-the-gog-modularity-with-interactivivity" class="slide level2 center">
 <h2>Why is it challenging to combine the GoG modularity with interactivivity?</h2>
 </section>
 <section id="graphics-and-structure" class="slide level2">
@@ -172,25 +201,26 @@ Adam Bartonicek
 <ul>
 <li><em>Can this map be any old function?</em>
 <ul>
-<li>Plots “in the wild” exhibit a number of regular properties/features</li>
-<li>Many in static plots, interactivity adds additional constraints</li>
+<li>Plots can be misleading representations <span class="citation" data-cites="tufte2001 cairo2014">(<a href="#/references" role="doc-biblioref" onclick="">Tufte 2001</a>; <a href="#/references" role="doc-biblioref" onclick="">Cairo 2014</a>)</span></li>
+<li>Faithful plots “in the wild” exhibit many regular features</li>
+<li>Interactivity adds additional constraints</li>
 </ul></li>
 </ul>
 </section>
 <section id="plots-as-partitions" class="slide level2">
 <h2>Plots as partitions</h2>
 <ul>
-<li>Useful to think about plots as <em>partitions</em>:
+<li>Useful idea: geoms as sets, plots as <em>partitions</em>:
 <ul>
-<li>A surjective collection of disjoint (and non-empty) subsets</li>
-<li>= <em>Each point, bar, or line represents a distinct set of cases/rows, and together the objects cover the whole data space (bijection)</em></li>
+<li>A surjective collection of disjoint subsets</li>
+<li><em>= Each point, bar, or line represents a distinct set of cases/rows, and together the objects cover the whole data space (bijection)</em></li>
 </ul></li>
 </ul>
 <p><span class="math display">\[\text{Data subsets} \to \text{Geometric objects}\]</span></p>
 <ul>
 <li>Some exceptions:
 <ul>
-<li>2D KDE plots (multiple isopleths map to same datapoints)</li>
+<li>2D KDE plots (multiple isopleths map to the same datapoints)</li>
 <li>Graphical deficiencies (e.g.&nbsp;overplotting)</li>
 </ul></li>
 </ul>
@@ -198,7 +228,7 @@ Adam Bartonicek
 <section id="plots-as-partitions-and-interactivity" class="slide level2">
 <h2>Plots as partitions and interactivity</h2>
 <ul>
-<li>The (bijective) partition model is useful in interactive graphics</li>
+<li>The (bijective) partition model is well-suited for interactive graphics</li>
 <li>Provides unambiguous visual mapping in linked selection:
 <ul>
 <li><em>If I click a bar in a plot, only that bar gets highlighted</em> <br> (not the case with non-disjoint data subsets)</li>
@@ -212,13 +242,13 @@ Adam Bartonicek
 <section id="plots-summaries-and-aesthetics" class="slide level2">
 <h2>Plots, summaries, and aesthetics</h2>
 <ul>
-<li>We rarely plot raw data - instead, we often summarize/aggregate</li>
-<li>Also, we encode the summaries into aesthetics <br> (via scales/coordinate systems)</li>
+<li>We rarely plot raw data: instead, we often summarize/aggregate</li>
+<li>Also encode the summaries into aesthetics (scales/coord. systems)</li>
 <li>Therefore, the full mapping is a <em>composition</em> of several maps:</li>
 </ul>
 <p><span class="math display">\[\text{Data subsets} \to \text{Summaries} \to \text{Aesthetics} \to \text{Geometric objects}\]</span></p>
 <ul>
-<li><em>The domains/codomains often have structure which the maps may or may not preserve</em></li>
+<li><em>The domains/codomains of these maps often have structure which the maps may or may not preserve</em></li>
 </ul>
 </section>
 <section id="example-stacking-1" class="slide level2">
@@ -226,10 +256,11 @@ Adam Bartonicek
 <ul>
 <li>The data partition can have a hierarchical structure
 <ul>
-<li>Data subsets are made up of smaller data subsets</li>
+<li>= Data subsets made up of smaller subsets</li>
+<li>E.g. stacked bar made up of segments, pie chart</li>
+<li><em>Not purely visual - segments represent data information</em></li>
 </ul></li>
-<li>Example: stacked barplot made up of segments</li>
-<li>To be a valid representation, the visualization map (plot) should preserve this structure
+<li>To be a valid, the map should preserve underlying structure
 <ul>
 <li>I.e. aggregation and encoding also need to be structure-preserving</li>
 </ul></li>
@@ -254,41 +285,43 @@ Adam Bartonicek
 <section id="example-stacking-3" class="slide level2">
 <h2>Example: Stacking 3</h2>
 <ul>
-<li>However, the mapping should preserve salient visual properties</li>
+<li>The mapping should preserve salient visual properties</li>
 <li>E.g. bar height:</li>
 </ul>
-<div style="margin-top: -30px; margin-bottom: -30px; font-size: 90%;">
-<p><span class="math display">\[\text{Height(Bar)} = \text{Height(Stack(Blue segment, Red segment))}\]</span></p>
+<div style="margin-top: -15px; margin-bottom: -15px; font-size: 90%;">
+<p><span class="math display">\[\text{Height(Bar subset)} = \text{Height(Stack(Blue subset, Red subset))}\]</span></p>
 </div>
 <ul>
-<li>However, this is not always the case
+<li>Not always the case:
 <ul>
-<li>Stacking sums is fine, stacking other is meaningless</li>
+<li><em>Stacking bars that represent counts, sums, or percentages is fine, but a stacked bar chart where bars show average values is generally meaningless.” <span class="citation" data-cites="wills2011">(<a href="#/references" role="doc-biblioref" onclick="">Wills 2011, 112</a>)</span>.</em></li>
 </ul></li>
 </ul>
 </section>
 <section id="structure-preserving-maps-functors" class="slide level2">
 <h2>Structure-preserving maps: Functors</h2>
 <ul>
-<li>In category theory, structure-preserving maps are known as functors</li>
+<li>In category theory, structure-preserving maps are known as functors <span class="citation" data-cites="fong2019">(<a href="#/references" role="doc-biblioref" onclick="">Fong and Spivak 2019</a>)</span></li>
 <li>Specifically, functors preserve function composition:</li>
 </ul>
 <p><span class="math display">\[F(f ; g) = F(f) ; F(g)\]</span></p>
 </section>
 <section id="functors-and-visualization" class="slide level2">
 <h2>Functors and visualization</h2>
-<p><span class="math display">\[F(f ; g) = F(f) ; F(g)\]</span></p>
 <ul>
 <li>In our case, we can think of <span class="math inline">\(f\)</span> and <span class="math inline">\(g\)</span> as taking a union with some fixed set, e.g.&nbsp;<span class="math inline">\(f(x) = x \cup A\)</span> and <span class="math inline">\(g(x) = x \cup B\)</span> (where <span class="math inline">\(x\)</span> can be <span class="math inline">\(\varnothing\)</span>)</li>
 <li><span class="math inline">\(F\)</span> can be the aggregation and encoding maps</li>
-<li>When both aggregation and encoding are functors, then the whole visualization map (plot) is a functor as well (functors compose):</li>
+</ul>
+<p><span class="math display">\[F(f ; g) = F(f) ; F(g)\]</span></p>
+<ul>
+<li>When both aggregation and encoding are functors, then the whole visualization map is a functor as well (functors compose):</li>
 </ul>
 <p><span class="math display">\[G(F(f ; g)) = G(F(f)) ; G(F(g))\]</span></p>
 </section>
-<section id="reasoning-about-graphics" class="slide level2">
-<h2>Reasoning about graphics</h2>
+<section id="functors-summaries-and-monoids" class="slide level2">
+<h2>Functors, summaries, and monoids</h2>
 <ul>
-<li>Practically, functors allow us to reason about composition of summary statistics and graphics</li>
+<li>With functors we can reason about composing summaries and graphics</li>
 <li>For instance, sums and maximums compose:
 <ul>
 <li><span class="math inline">\(\text{sum}(A \cup B \cup C) = \text{sum}(A) + \text{sum}(B) + \text{sum}(C)\)</span></li>
@@ -298,7 +331,7 @@ Adam Bartonicek
 <ul>
 <li><span class="math inline">\(\text{mean}(A \cup B \cup C) \neq \text{mean}(\{\text{mean}(A), \text{mean}(B), \text{mean}(C)\})\)</span></li>
 </ul></li>
-<li></li>
+<li>If we want to preserve set union, the specific class of a functor which does this is called a <em>monoid</em></li>
 </ul>
 </section>
 <section id="preserving-properties" class="slide level2">
@@ -328,7 +361,33 @@ Adam Bartonicek
 <li>To do this, not just the geometric objects but also the underlying summaries need to be associative</li>
 <li>Counterexample: stacking</li>
 </ul>
+</section>
+<section id="references" class="slide level2 smaller scrollable">
+<h2>References</h2>
 
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-cairo2014" class="csl-entry" role="listitem">
+Cairo, Alberto. 2014. <span>“Graphics Lies, Misleading Visuals: Reflections on the Challenges and Pitfalls of Evidence-Driven Visual Communication.”</span> In <em>New Challenges for Data Design</em>, 103–16. Springer.
+</div>
+<div id="ref-fong2019" class="csl-entry" role="listitem">
+Fong, Brendan, and David I Spivak. 2019. <em>An Invitation to Applied Category Theory: Seven Sketches in Compositionality</em>. Cambridge University Press.
+</div>
+<div id="ref-tufte2001" class="csl-entry" role="listitem">
+Tufte, Edward R. 2001. <em>The Visual Display of Quantitative Information</em>. Cheshire, Connecticut: Graphics Press LLC.
+</div>
+<div id="ref-urbanek2011" class="csl-entry" role="listitem">
+Urbanek, Simon. 2011. <span>“iPlots eXtreme: Next-Generation Interactive Graphics Design and Implementation of Modern Interactive Graphics.”</span> <em>Computational Statistics</em> 26 (3): 381–93.
+</div>
+<div id="ref-urbanek2003" class="csl-entry" role="listitem">
+Urbanek, Simon, and Martin Theus. 2003. <span>“iPlots: High Interaction Graphics for r.”</span> In <em>Proceedings of the 3rd International Workshop on Distributed Statistical Computing</em>. Citeseer.
+</div>
+<div id="ref-wilkinson2012" class="csl-entry" role="listitem">
+Wilkinson, Leland. 2012. <em>The Grammar of Graphics</em>. Springer.
+</div>
+<div id="ref-wills2011" class="csl-entry" role="listitem">
+Wills, Graham. 2011. <em>Visualizing Time: Designing Graphical Representations for Statistical Data</em>. Springer Science &amp; Business Media.
+</div>
+</div>
 </section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
