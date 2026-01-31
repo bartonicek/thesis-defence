@@ -12,22 +12,23 @@ execute:
 bibliography: references.bib
 ---
 
-## Initial evolution of thesis
+## Thesis topic evolution
 
-- During master's: implement a new interactive data visualization library, building on `iplots` [@urbanek2003; @urbanek2011]
-- Wanted to incorporate ideas from the Grammar of Graphics <br> [GoG, @wilkinson2012]
-- Was also interested in functional programming at the time
-- Realized many problems parallel those that we deal with in graphics
-- This eventually lead me to category theory [@fong2019]
+- Master's thesis: implement a portable interactive data visualization library in JS for R, building on `iplots` [@urbanek2011]
+- Wanted to incorporate Grammar of Graphics [GoG, @wilkinson2012]
+- Also had interest in functional programming at the time
+  - Realized there are some important parallels
+- This lead me to category theory [@fong2019]
 
 ## Historical split in interactive graphics
 
--   "Classical" IDV systems
+-   **"Classical" IDV systems (1980-2010s)**
+    - Standalone apps
     - Deep interactivity, less flexible
     - Nominal style: *scatterplot, barplot, ...*
--   Modern GoG-based IDV systems: 
-    - Highly customizable but more shallow interactivity out-of-the-box
-    - Compositional style: *plot with continuous x- and y- encodings and point geometry ...*
+-   **Modern web-based IDV systems (2005-current)** 
+    - Highly customizable but less interactivity out-of-the-box
+    - Compositional style: *plot with continuous x- and y- encodings and point geometry ...* (GoG-based)
 
 ## Why is it challenging to combine the GoG modularity with interactivivity? {.center}
 
@@ -130,21 +131,21 @@ $$\text{Data subsets} \to \text{Summaries} \to \text{Aesthetics} \to \text{Geome
 - The data partition can have a hierarchical structure
   - = Data subsets made up of smaller subsets
   - E.g. stacked bar made up of segments, pie chart
-  - *Not purely visual - segments represent data information*
-- To be a valid, the map should preserve underlying structure
+  - *Not purely visual* - segments represent data information
+- The map should preserve this underlying structure
   - I.e. aggregation and encoding also need to be structure-preserving
 
 ## Example: Stacking 2
 
 - Suppose: 
 
-::: {style="margin-top: -40px; margin-bottom: -40px;"}
+::: {style="margin-top: -30px; margin-bottom: -30px;"}
 $$\qquad \text{Bar subset} = \text{Gray subset} \cup \text{Blue subset}$$
 :::
 
 - We want: 
 
-::: {style="margin-top: -40px; margin-bottom: -40px;"}
+::: {style="margin-top: -30px; margin-bottom: -30px;"}
 $$\qquad \text{Bar} = \text{Stack}(\text{Gray segment}, \text{Blue segment})$$
 :::
 
@@ -170,35 +171,43 @@ $$\text{Height(Bar subset)} = \text{Height(Stack(Blue subset, Red subset))}$$
 :::
 
 - Not always the case:
-  - *Stacking bars that represent counts, sums, or percentages is fine, but a stacked bar chart where bars show average values is generally meaningless." [@wills2011, p. 112].*
+  - *"Stacking bars that represent counts, sums, or percentages is fine, but a stacked bar chart where bars show average values is generally meaningless." [@wills2011, p. 112]*
+  - *Why* is it meaningless? And *when*?  
 
-## Structure-preserving maps: Functors
+## Category theory and functors
 
-- In category theory, structure-preserving maps are known as functors [@fong2019]
+- Category theory is an area of math concerned with structure and composition [@fong2019]
+- Fundamental concept: a *functor*
+- Functors are a generalization of structure-preserving maps
 - Specifically, functors preserve function composition:
 
 $$F(f ; g) = F(f) ; F(g)$$
 
 ## Functors and visualization
 
-- In our case, we can think of $f$ and $g$ as taking a union with some fixed set, e.g. $f(x) = x \cup A$ and $g(x) = x \cup B$ (where $x$ can be $\varnothing$)
-- $F$ can be the aggregation and encoding maps
+- In our case, we can think of $f$ and $g$ as union with some fixed set
+  - E.g. $f(x) = x \cup A$, and $g(x) = x \cup B$
+  - $x$ can be $\varnothing$
+- $F$ is the aggregation (and encoding) map. Then:
 
+::: {style="margin-top: -15px; margin-bottom: -15px; font-size: 90%;"}
 $$F(f ; g) = F(f) ; F(g)$$
+:::
 
-- When both aggregation and encoding are functors, then the whole visualization map is a functor as well (functors compose):
+- Translates to e.g.:
 
-$$G(F(f ; g)) = G(F(f)) ; G(F(g))$$
+::: {style="margin-top: -15px; margin-bottom: -15px; font-size: 90%;"}
+$$\text{stack}(\text{sum}(A \cup B)) = \text{stack}(\text{sum}(A), \text{sum}(B))$$
+:::
 
-## Functors, summaries, and monoids
+## Functorial summaries and monoids
 
-- With functors we can reason about composing summaries and graphics
-- For instance, sums and maximums compose:
-  - $\text{sum}(A \cup B \cup C) = \text{sum}(A) + \text{sum}(B) + \text{sum}(C)$
-  - $\text{max}(A \cup B \cup C) = \text{max}(\{\text{max}(A), \text{max}(B), \text{max}(C)\})$
-- However, e.g. means do not:
-  - $\text{mean}(A \cup B \cup C) \neq \text{mean}(\{\text{mean}(A), \text{mean}(B), \text{mean}(C)\})$
-- If we want to preserve set union, the specific class of a functor which does this is called a *monoid*
+- Original idea: model plots as *partitions* 
+  - Geoms as disjoint sets
+- If we start from this, we can make use of *monoid*s
+- A monoid $(M, e, \otimes)$ is a set $M$ equipped with a neutral element $e$ and an associative binary operation $\otimes$ 
+- It is easy to show that aggregating with a monoid is a functor from a partition category to a category of summaries (preserves set union)
+  - Known in parallel computing and relational database research [@parent2018; @fegaras2017; @lin2013; @gibbons2018]
 
 ## Preserving properties
 

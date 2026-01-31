@@ -49,7 +49,7 @@
     div.csl-indent {
       margin-left: 2em;
     }  </style>
-  <link rel="stylesheet" href="presentation_files/libs/revealjs/dist/theme/quarto-29a56d25e2077b9adde6439ef5f2e6e6.css">
+  <link rel="stylesheet" href="presentation_files/libs/revealjs/dist/theme/quarto-fc05cc82f334f35f6742a9eae5c0cae4.css">
   <link href="presentation_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="presentation_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="presentation_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -158,28 +158,31 @@ Adam Bartonicek
 </div>
 
 </section>
-<section id="initial-evolution-of-thesis" class="slide level2">
-<h2>Initial evolution of thesis</h2>
+<section id="thesis-topic-evolution" class="slide level2">
+<h2>Thesis topic evolution</h2>
 <ul>
-<li>During master’s: implement a new interactive data visualization library, building on <code>iplots</code> <span class="citation" data-cites="urbanek2003 urbanek2011">(<a href="#/references" role="doc-biblioref" onclick="">Urbanek and Theus 2003</a>; <a href="#/references" role="doc-biblioref" onclick="">Urbanek 2011</a>)</span></li>
-<li>Wanted to incorporate ideas from the Grammar of Graphics <br> <span class="citation" data-cites="wilkinson2012">(GoG, <a href="#/references" role="doc-biblioref" onclick="">Wilkinson 2012</a>)</span></li>
-<li>Was also interested in functional programming at the time</li>
-<li>Realized many problems parallel those that we deal with in graphics</li>
-<li>This eventually lead me to category theory <span class="citation" data-cites="fong2019">(<a href="#/references" role="doc-biblioref" onclick="">Fong and Spivak 2019</a>)</span></li>
+<li>Master’s thesis: implement a portable interactive data visualization library in JS for R, building on <code>iplots</code> <span class="citation" data-cites="urbanek2011">(<a href="#/references" role="doc-biblioref" onclick="">Urbanek 2011</a>)</span></li>
+<li>Wanted to incorporate Grammar of Graphics <span class="citation" data-cites="wilkinson2012">(GoG, <a href="#/references" role="doc-biblioref" onclick="">Wilkinson 2012</a>)</span></li>
+<li>Also had interest in functional programming at the time
+<ul>
+<li>Realized there are some important parallels</li>
+</ul></li>
+<li>This lead me to category theory <span class="citation" data-cites="fong2019">(<a href="#/references" role="doc-biblioref" onclick="">Fong and Spivak 2019</a>)</span></li>
 </ul>
 </section>
 <section id="historical-split-in-interactive-graphics" class="slide level2">
 <h2>Historical split in interactive graphics</h2>
 <ul>
-<li>“Classical” IDV systems
+<li><strong>“Classical” IDV systems (1980-2010s)</strong>
 <ul>
+<li>Standalone apps</li>
 <li>Deep interactivity, less flexible</li>
 <li>Nominal style: <em>scatterplot, barplot, …</em></li>
 </ul></li>
-<li>Modern GoG-based IDV systems:
+<li><strong>Modern web-based IDV systems (2005-current)</strong>
 <ul>
-<li>Highly customizable but more shallow interactivity out-of-the-box</li>
-<li>Compositional style: <em>plot with continuous x- and y- encodings and point geometry …</em></li>
+<li>Highly customizable but less interactivity out-of-the-box</li>
+<li>Compositional style: <em>plot with continuous x- and y- encodings and point geometry …</em> (GoG-based)</li>
 </ul></li>
 </ul>
 </section>
@@ -258,9 +261,9 @@ Adam Bartonicek
 <ul>
 <li>= Data subsets made up of smaller subsets</li>
 <li>E.g. stacked bar made up of segments, pie chart</li>
-<li><em>Not purely visual - segments represent data information</em></li>
+<li><em>Not purely visual</em> - segments represent data information</li>
 </ul></li>
-<li>To be a valid, the map should preserve underlying structure
+<li>The map should preserve this underlying structure
 <ul>
 <li>I.e. aggregation and encoding also need to be structure-preserving</li>
 </ul></li>
@@ -271,13 +274,13 @@ Adam Bartonicek
 <ul>
 <li>Suppose:</li>
 </ul>
-<div style="margin-top: -40px; margin-bottom: -40px;">
+<div style="margin-top: -30px; margin-bottom: -30px;">
 <p><span class="math display">\[\qquad \text{Bar subset} = \text{Gray subset} \cup \text{Blue subset}\]</span></p>
 </div>
 <ul>
 <li>We want:</li>
 </ul>
-<div style="margin-top: -40px; margin-bottom: -40px;">
+<div style="margin-top: -30px; margin-bottom: -30px;">
 <p><span class="math display">\[\qquad \text{Bar} = \text{Stack}(\text{Gray segment}, \text{Blue segment})\]</span></p>
 </div>
 
@@ -294,14 +297,17 @@ Adam Bartonicek
 <ul>
 <li>Not always the case:
 <ul>
-<li><em>Stacking bars that represent counts, sums, or percentages is fine, but a stacked bar chart where bars show average values is generally meaningless.” <span class="citation" data-cites="wills2011">(<a href="#/references" role="doc-biblioref" onclick="">Wills 2011, 112</a>)</span>.</em></li>
+<li><em>“Stacking bars that represent counts, sums, or percentages is fine, but a stacked bar chart where bars show average values is generally meaningless.” <span class="citation" data-cites="wills2011">(<a href="#/references" role="doc-biblioref" onclick="">Wills 2011, 112</a>)</span></em></li>
+<li><em>Why</em> is it meaningless? And <em>when</em>?</li>
 </ul></li>
 </ul>
 </section>
-<section id="structure-preserving-maps-functors" class="slide level2">
-<h2>Structure-preserving maps: Functors</h2>
+<section id="category-theory-and-functors" class="slide level2">
+<h2>Category theory and functors</h2>
 <ul>
-<li>In category theory, structure-preserving maps are known as functors <span class="citation" data-cites="fong2019">(<a href="#/references" role="doc-biblioref" onclick="">Fong and Spivak 2019</a>)</span></li>
+<li>Category theory is an area of math concerned with structure and composition <span class="citation" data-cites="fong2019">(<a href="#/references" role="doc-biblioref" onclick="">Fong and Spivak 2019</a>)</span></li>
+<li>Fundamental concept: a <em>functor</em></li>
+<li>Functors are a generalization of structure-preserving maps</li>
 <li>Specifically, functors preserve function composition:</li>
 </ul>
 <p><span class="math display">\[F(f ; g) = F(f) ; F(g)\]</span></p>
@@ -309,29 +315,36 @@ Adam Bartonicek
 <section id="functors-and-visualization" class="slide level2">
 <h2>Functors and visualization</h2>
 <ul>
-<li>In our case, we can think of <span class="math inline">\(f\)</span> and <span class="math inline">\(g\)</span> as taking a union with some fixed set, e.g.&nbsp;<span class="math inline">\(f(x) = x \cup A\)</span> and <span class="math inline">\(g(x) = x \cup B\)</span> (where <span class="math inline">\(x\)</span> can be <span class="math inline">\(\varnothing\)</span>)</li>
-<li><span class="math inline">\(F\)</span> can be the aggregation and encoding maps</li>
+<li>In our case, we can think of <span class="math inline">\(f\)</span> and <span class="math inline">\(g\)</span> as union with some fixed set
+<ul>
+<li>E.g. <span class="math inline">\(f(x) = x \cup A\)</span>, and <span class="math inline">\(g(x) = x \cup B\)</span></li>
+<li><span class="math inline">\(x\)</span> can be <span class="math inline">\(\varnothing\)</span></li>
+</ul></li>
+<li><span class="math inline">\(F\)</span> is the aggregation (and encoding) map. Then:</li>
 </ul>
+<div style="margin-top: -15px; margin-bottom: -15px; font-size: 90%;">
 <p><span class="math display">\[F(f ; g) = F(f) ; F(g)\]</span></p>
+</div>
 <ul>
-<li>When both aggregation and encoding are functors, then the whole visualization map is a functor as well (functors compose):</li>
+<li>Translates to e.g.:</li>
 </ul>
-<p><span class="math display">\[G(F(f ; g)) = G(F(f)) ; G(F(g))\]</span></p>
+<div style="margin-top: -15px; margin-bottom: -15px; font-size: 90%;">
+<p><span class="math display">\[\text{stack}(\text{sum}(A \cup B)) = \text{stack}(\text{sum}(A), \text{sum}(B))\]</span></p>
+</div>
 </section>
-<section id="functors-summaries-and-monoids" class="slide level2">
-<h2>Functors, summaries, and monoids</h2>
+<section id="functorial-summaries-and-monoids" class="slide level2">
+<h2>Functorial summaries and monoids</h2>
 <ul>
-<li>With functors we can reason about composing summaries and graphics</li>
-<li>For instance, sums and maximums compose:
+<li>Original idea: model plots as <em>partitions</em>
 <ul>
-<li><span class="math inline">\(\text{sum}(A \cup B \cup C) = \text{sum}(A) + \text{sum}(B) + \text{sum}(C)\)</span></li>
-<li><span class="math inline">\(\text{max}(A \cup B \cup C) = \text{max}(\{\text{max}(A), \text{max}(B), \text{max}(C)\})\)</span></li>
+<li>Geoms as disjoint sets</li>
 </ul></li>
-<li>However, e.g.&nbsp;means do not:
+<li>If we start from this, we can make use of <em>monoid</em>s</li>
+<li>A monoid <span class="math inline">\((M, e, \otimes)\)</span> is a set <span class="math inline">\(M\)</span> equipped with a neutral element <span class="math inline">\(e\)</span> and an associative binary operation <span class="math inline">\(\otimes\)</span></li>
+<li>It is easy to show that aggregating with a monoid is a functor from a partition category to a category of summaries (preserves set union)
 <ul>
-<li><span class="math inline">\(\text{mean}(A \cup B \cup C) \neq \text{mean}(\{\text{mean}(A), \text{mean}(B), \text{mean}(C)\})\)</span></li>
+<li>Known in parallel computing and relational database research <span class="citation" data-cites="parent2018 fegaras2017 lin2013 gibbons2018">(<a href="#/references" role="doc-biblioref" onclick="">Parent 2018</a>; <a href="#/references" role="doc-biblioref" onclick="">Fegaras 2017</a>; <a href="#/references" role="doc-biblioref" onclick="">Lin 2013</a>; <a href="#/references" role="doc-biblioref" onclick="">Gibbons et al. 2018</a>)</span></li>
 </ul></li>
-<li>If we want to preserve set union, the specific class of a functor which does this is called a <em>monoid</em></li>
 </ul>
 </section>
 <section id="preserving-properties" class="slide level2">
@@ -369,17 +382,26 @@ Adam Bartonicek
 <div id="ref-cairo2014" class="csl-entry" role="listitem">
 Cairo, Alberto. 2014. <span>“Graphics Lies, Misleading Visuals: Reflections on the Challenges and Pitfalls of Evidence-Driven Visual Communication.”</span> In <em>New Challenges for Data Design</em>, 103–16. Springer.
 </div>
+<div id="ref-fegaras2017" class="csl-entry" role="listitem">
+Fegaras, Leonidas. 2017. <span>“An Algebra for Distributed Big Data Analytics.”</span> <em>Journal of Functional Programming</em> 27: e27.
+</div>
 <div id="ref-fong2019" class="csl-entry" role="listitem">
 Fong, Brendan, and David I Spivak. 2019. <em>An Invitation to Applied Category Theory: Seven Sketches in Compositionality</em>. Cambridge University Press.
+</div>
+<div id="ref-gibbons2018" class="csl-entry" role="listitem">
+Gibbons, Jeremy, Fritz Henglein, Ralf Hinze, and Nicolas Wu. 2018. <span>“Relational Algebra by Way of Adjunctions.”</span> <em>Proceedings of the ACM on Programming Languages</em> 2 (ICFP): 1–28.
+</div>
+<div id="ref-lin2013" class="csl-entry" role="listitem">
+Lin, Jimmy. 2013. <span>“Monoidify! Monoids as a Design Principle for Efficient Mapreduce Algorithms.”</span> <em>arXiv Preprint arXiv:1304.7544</em>.
+</div>
+<div id="ref-parent2018" class="csl-entry" role="listitem">
+Parent, Sean. 2018. <span>“<span>Generic Programming</span>.”</span> Pacific++. <a href="https://www.youtube.com/watch?v=iwJpxWHuZQY">https://www.youtube.com/watch?v=iwJpxWHuZQY</a>.
 </div>
 <div id="ref-tufte2001" class="csl-entry" role="listitem">
 Tufte, Edward R. 2001. <em>The Visual Display of Quantitative Information</em>. Cheshire, Connecticut: Graphics Press LLC.
 </div>
 <div id="ref-urbanek2011" class="csl-entry" role="listitem">
 Urbanek, Simon. 2011. <span>“iPlots eXtreme: Next-Generation Interactive Graphics Design and Implementation of Modern Interactive Graphics.”</span> <em>Computational Statistics</em> 26 (3): 381–93.
-</div>
-<div id="ref-urbanek2003" class="csl-entry" role="listitem">
-Urbanek, Simon, and Martin Theus. 2003. <span>“iPlots: High Interaction Graphics for r.”</span> In <em>Proceedings of the 3rd International Workshop on Distributed Statistical Computing</em>. Citeseer.
 </div>
 <div id="ref-wilkinson2012" class="csl-entry" role="listitem">
 Wilkinson, Leland. 2012. <em>The Grammar of Graphics</em>. Springer.
