@@ -3,6 +3,7 @@ title: "The Fabric of Interactive Graphics"
 author: "Adam Bartonicek"
 format: 
   revealjs:
+    center: true
     theme: [default, styles.scss]
 editor: visual
 editor_options: 
@@ -12,57 +13,96 @@ execute:
 bibliography: references.bib
 ---
 
-## Thesis topic evolution
+## Big thanks...
 
-- Master's thesis: implement a portable interactive data visualization library in JS for R, building on `iplots` [@urbanek2011]
+:::{.columns}
+:::{.column}
+![Dr. Simon Urbanek](./simon.png){fig-align="left"}
+:::
+
+:::{.column}
+![Dr. Paul Murrell](./paul.jpeg){fig-align="left"}
+:::
+:::
+
+- The University of Auckland Department of Statistics
+- Dr. Filip Krikava (CTU), Antony Unwin, the statistical graphics and R community
+- My partner Nela, family, friends
+
+## Topic evolution
+
+- Master's thesis: implement a portable interactive data visualization library in JS for R, building on `iplots` [@urbanek2003; @urbanek2011]
 - Wanted to incorporate Grammar of Graphics [GoG, @wilkinson2012]
 - Also had interest in functional programming at the time
   - Realized there are some important parallels
-- This lead me to category theory [@fong2019]
+- This eventually lead me to category theory [@fong2019]
 
-## Historical split in interactive graphics
+## The motivating problem... {.center-title}
 
--   **"Classical" IDV systems (1980-2010s)**
+## Split in interactive graphics
+
+-   **"Classical" IDV systems (~1980-2010s)**
     - Standalone apps
-    - Deep interactivity, less flexible
-    - Nominal style: *scatterplot, barplot, ...*
+    - Deep interactivity (e.g. linked selection, parametric interaction, tours,...) 
+    - Less flexible, nominal style: *scatterplot, barplot, ...*
 -   **Modern web-based IDV systems (2005-current)** 
+    - Focus on dashboards, presentation
     - Highly customizable but less interactivity out-of-the-box
     - Compositional style: *plot with continuous x- and y- encodings and point geometry ...* (GoG-based)
 
-## Why is it challenging to combine the GoG modularity with interactivivity? {.center}
+## *Why is it so hard to combine flexibility with deep interactive features?* {.center-title}
 
-## Graphics and structure
+## The Grammar of Graphics and independence
 
--   A plot is not just a picture - instead, it is a graphical representation of structured information
+- Plots composed out of modular components [@wilkinson2012]:
+  - Data, aesthetics, stats, geoms, scales, coordinate systems
+- Components treated as (semi-)independent
+  - "Lego bricks", mix-and-match
+  - Particularly in software implementations [e.g. `ggplo2`, @wickham2016; `altair` @vanderplas2018, etc...]
+- *Powerful, however, are there limits? Particularly when it comes to interactivity?*
 
-## Plots as maps
+## Limits of independence
 
-- A plot is a map (function) from data to a graphical display (represented on computer screen/paper):
+:::{.incremental}
+- *"This system cannot produce a meaningless graphic, however. This is a strong claim, vulnerable to a single counter-example. It is a claim based on the formal rules of the system, however, not on the evaluation of specific graphics it may produce."* [@wilkinson2012, pp. 15]
+
+- *"Some of the combinations of graphs and statistical methods may be degenerate or bizarre, but there is no moral reason to restrict them."* [@wilkinson2012, pp. 112]
+
+:::
+
+## Let's start from some definitions... {.center-title}
+
+## Plots as maps (functions)
+
+- A plot is a map from data to a graphical display (computer screen/paper):
 
 $$\text{Data} \to \text{Graphics}$$
 
-- *Can this map be any old function?*
+- *Can this map be arbitrary? No*
+  - Draw a single red square regardless of data - valid function but bad plot
   - Plots can be misleading representations [@tufte2001; @cairo2014]
   - Faithful plots "in the wild" exhibit many regular features
   - Interactivity adds additional constraints
 
-## Plots as partitions
+## Regular plots
 
-- Useful idea: geoms as sets, plots as *partitions*:
+- Useful definition (?): think about geoms as sets, plots as *partitions*:
     -   A surjective collection of disjoint subsets
     -   *= Each point, bar, or line represents a distinct set of cases/rows, and together the objects cover the whole data space (bijection)*
 
+::: {style="margin-top: -30px; margin-bottom: -30px;"}
 $$\text{Data subsets} \to \text{Geometric objects}$$
+:::
     
 -   Some exceptions:
     -   2D KDE plots (multiple isopleths map to the same datapoints)
     -   Graphical deficiencies (e.g. overplotting)
+- However, covers vast majority of classic plots
 
 ## Plots as partitions and interactivity
 
 - The (bijective) partition model is well-suited for interactive graphics
-- Provides unambiguous visual mapping in linked selection:
+- Provides clear visual mapping in linked selection:
   - *If I click a bar in a plot, only that bar gets highlighted* <br> (not the case with non-disjoint data subsets)
   
 ```{r}
@@ -114,7 +154,7 @@ p1 + plot_spacer() + p2 + p12 + p1 + plot_spacer() + p3 +
   plot_layout(nrow=1, widths = c(1, 0.2, 1, 1, 1, 0.2, 1))
 ```
   
-- Also useful for querying: geom/subset information is independent
+- Also useful for e.g. querying: geom/subset information is independent
 
 ## Plots, summaries, and aesthetics
 
@@ -133,7 +173,7 @@ $$\text{Data subsets} \to \text{Summaries} \to \text{Aesthetics} \to \text{Geome
   - E.g. stacked bar made up of segments, pie chart
   - *Not purely visual* - segments represent data information
 - The map should preserve this underlying structure
-  - I.e. aggregation and encoding also need to be structure-preserving
+  - I.e. aggregation and encoding also need to align with the hierarchical structure
 
 ## Example: Stacking 2
 
@@ -167,19 +207,18 @@ ggplot(mtcars, aes(cyl, mpg, fill = am)) +
 - E.g. bar height:
 
 ::: {style="margin-top: -15px; margin-bottom: -15px; font-size: 90%;"}
-$$\text{Height(Bar subset)} = \text{Height(Stack(Blue subset, Red subset))}$$
+$$\text{Height(Plot(Bar subset))} = \text{Height(Stack(Plot(Blue subset), Plot(Red subset)))}$$
 :::
 
 - Not always the case:
-  - *"Stacking bars that represent counts, sums, or percentages is fine, but a stacked bar chart where bars show average values is generally meaningless." [@wills2011, p. 112]*
+  - *"Stacking bars that represent counts, sums, or percentages is fine,<br> but a stacked bar chart where bars show average values is generally meaningless." [@wills2011, p. 112]*
   - *Why* is it meaningless? And *when*?  
 
 ## Category theory and functors
 
 - Category theory is an area of math concerned with structure and composition [@fong2019]
-- Fundamental concept: a *functor*
-- Functors are a generalization of structure-preserving maps
-- Specifically, functors preserve function composition:
+- Fundamental concept: a *functor*, generalization of structure-preserving maps
+- Functors preserve function composition:
 
 $$F(f ; g) = F(f) ; F(g)$$
 
@@ -194,41 +233,41 @@ $$F(f ; g) = F(f) ; F(g)$$
 $$F(f ; g) = F(f) ; F(g)$$
 :::
 
-- Translates to e.g.:
+- Translates to:
 
 ::: {style="margin-top: -15px; margin-bottom: -15px; font-size: 90%;"}
-$$\text{stack}(\text{sum}(A \cup B)) = \text{stack}(\text{sum}(A), \text{sum}(B))$$
+$$\text{plot}(\text{summarize}(A \cup B)) = \text{plot}(\text{summarize}(A), \text{summarize}(B))$$
 :::
 
 ## Functorial summaries and monoids
 
-- Original idea: model plots as *partitions* 
-  - Geoms as disjoint sets
-- If we start from this, we can make use of *monoid*s
-- A monoid $(M, e, \otimes)$ is a set $M$ equipped with a neutral element $e$ and an associative binary operation $\otimes$ 
-- It is easy to show that aggregating with a monoid is a functor from a partition category to a category of summaries (preserves set union)
+- Functors let us reason about structure-preserving plots
+- Starting from the *plots as partitions* model, we can be ever more precise
+- We can show that the fundamental structure is a *monoid*: a set equipped with an associative binary operation and a neutral element
+- Then, aggregation is a functor from the partition category to the category of summaries (preserves set union)
   - Known in parallel computing and relational database research [@parent2018; @fegaras2017; @lin2013; @gibbons2018]
 
-## Preserving properties
+## Monoids, groups, and beyond
 
--   However, perhaps we want plots to be more than just *any* function
--   Maps can preserve or fail to preserve certain properties
--   If partition is the fundamental model, then the mapping (plot) should preserve the properties of sets and set operations
--   Statistics and graphics should behave like sets
+- Monoids are fundamental for modeling geoms as sets under union
+- To preserve other properties, we need more structure
+- For instance, to preserve set difference, the operation needs to have an inverse: 
+  - Algebraic *groups* (i.e. the ones from group theory)
+  - Practical impact on interactive graphics: monoids are enough for showing *single-subset* linked selection, groups necessary for showing selection of *multiple independent groups* 
+  - Comparing $A$ vs. $A \cup B$, or comparing $A$ vs. $B$ directly
+- Other properties: monotonicity, commutativity, etc...
+  
+## Closing thoughts...
 
-## Set union and associativity
+- Components of graphics are not independent, but instead deeply linked
+- Missing link in GoG, can be described using the language of category theory 
+- Most novel contribution, many interesting applied problems as well:
+  - Features: interactive and otherwise
+  - Data visualization pipeline: reactivity, hierarchical summaries, scales, etc... 
+  - Architecture and programming paradigm  
 
--   One fundamental thing we can do with sets is to merge them (union)
--   Set union has several important properties, including associativity:
+## Feel lucky to have stumbled upon an interesting topic, a lot of room for future work
 
-$$A \cup (B \cup C) = (A \cup B) \cup C = A \cup B \cup C$$
 
--   *"If we gather up the stuff contained in several sets, we end up with the same result regardless of what order we do it in"*
-
-## Preserving set union
-
--   If we want to interpret the geometric objects in our plots as sets, they need to preserve associativity
--   To do this, not just the geometric objects but also the underlying summaries need to be associative
--   Counterexample: stacking
 
 ## References

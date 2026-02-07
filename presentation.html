@@ -49,7 +49,7 @@
     div.csl-indent {
       margin-left: 2em;
     }  </style>
-  <link rel="stylesheet" href="presentation_files/libs/revealjs/dist/theme/quarto-fc05cc82f334f35f6742a9eae5c0cae4.css">
+  <link rel="stylesheet" href="presentation_files/libs/revealjs/dist/theme/quarto-545540e71c29bf6d99de7d0065e7cfe0.css">
   <link href="presentation_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="presentation_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="presentation_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -158,91 +158,142 @@ Adam Bartonicek
 </div>
 
 </section>
-<section id="thesis-topic-evolution" class="slide level2">
-<h2>Thesis topic evolution</h2>
+<section id="big-thanks" class="slide level2 center">
+<h2>Big thanks…</h2>
+<div class="columns">
+<div class="column">
+<div class="quarto-figure quarto-figure-left">
+<figure>
+<p><img data-src="./simon.png"></p>
+<figcaption>Dr.&nbsp;Simon Urbanek</figcaption>
+</figure>
+</div>
+</div><div class="column">
+<div class="quarto-figure quarto-figure-left">
+<figure>
+<p><img data-src="./paul.jpeg"></p>
+<figcaption>Dr.&nbsp;Paul Murrell</figcaption>
+</figure>
+</div>
+</div></div>
 <ul>
-<li>Master’s thesis: implement a portable interactive data visualization library in JS for R, building on <code>iplots</code> <span class="citation" data-cites="urbanek2011">(<a href="#/references" role="doc-biblioref" onclick="">Urbanek 2011</a>)</span></li>
+<li>The University of Auckland Department of Statistics</li>
+<li>Dr.&nbsp;Filip Krikava (CTU), Antony Unwin, the statistical graphics and R community</li>
+<li>My partner Nela, family, friends</li>
+</ul>
+</section>
+<section id="topic-evolution" class="slide level2 center">
+<h2>Topic evolution</h2>
+<ul>
+<li>Master’s thesis: implement a portable interactive data visualization library in JS for R, building on <code>iplots</code> <span class="citation" data-cites="urbanek2003 urbanek2011">(<a href="#/references" role="doc-biblioref" onclick="">Urbanek and Theus 2003</a>; <a href="#/references" role="doc-biblioref" onclick="">Urbanek 2011</a>)</span></li>
 <li>Wanted to incorporate Grammar of Graphics <span class="citation" data-cites="wilkinson2012">(GoG, <a href="#/references" role="doc-biblioref" onclick="">Wilkinson 2012</a>)</span></li>
 <li>Also had interest in functional programming at the time
 <ul>
 <li>Realized there are some important parallels</li>
 </ul></li>
-<li>This lead me to category theory <span class="citation" data-cites="fong2019">(<a href="#/references" role="doc-biblioref" onclick="">Fong and Spivak 2019</a>)</span></li>
+<li>This eventually lead me to category theory <span class="citation" data-cites="fong2019">(<a href="#/references" role="doc-biblioref" onclick="">Fong and Spivak 2019</a>)</span></li>
 </ul>
 </section>
-<section id="historical-split-in-interactive-graphics" class="slide level2">
-<h2>Historical split in interactive graphics</h2>
+<section id="the-motivating-problem" class="slide level2 center-title center">
+<h2>The motivating problem…</h2>
+</section>
+<section id="split-in-interactive-graphics" class="slide level2 center">
+<h2>Split in interactive graphics</h2>
 <ul>
-<li><strong>“Classical” IDV systems (1980-2010s)</strong>
+<li><strong>“Classical” IDV systems (~1980-2010s)</strong>
 <ul>
 <li>Standalone apps</li>
-<li>Deep interactivity, less flexible</li>
-<li>Nominal style: <em>scatterplot, barplot, …</em></li>
+<li>Deep interactivity (e.g.&nbsp;linked selection, parametric interaction, tours,…)</li>
+<li>Less flexible, nominal style: <em>scatterplot, barplot, …</em></li>
 </ul></li>
 <li><strong>Modern web-based IDV systems (2005-current)</strong>
 <ul>
+<li>Focus on dashboards, presentation</li>
 <li>Highly customizable but less interactivity out-of-the-box</li>
 <li>Compositional style: <em>plot with continuous x- and y- encodings and point geometry …</em> (GoG-based)</li>
 </ul></li>
 </ul>
 </section>
-<section id="why-is-it-challenging-to-combine-the-gog-modularity-with-interactivivity" class="slide level2 center">
-<h2>Why is it challenging to combine the GoG modularity with interactivivity?</h2>
+<section id="why-is-it-so-hard-to-combine-flexibility-with-deep-interactive-features" class="slide level2 center-title center">
+<h2><em>Why is it so hard to combine flexibility with deep interactive features?</em></h2>
 </section>
-<section id="graphics-and-structure" class="slide level2">
-<h2>Graphics and structure</h2>
+<section id="the-grammar-of-graphics-and-independence" class="slide level2 center">
+<h2>The Grammar of Graphics and independence</h2>
 <ul>
-<li>A plot is not just a picture - instead, it is a graphical representation of structured information</li>
+<li>Plots composed out of modular components <span class="citation" data-cites="wilkinson2012">(<a href="#/references" role="doc-biblioref" onclick="">Wilkinson 2012</a>)</span>:
+<ul>
+<li>Data, aesthetics, stats, geoms, scales, coordinate systems</li>
+</ul></li>
+<li>Components treated as (semi-)independent
+<ul>
+<li>“Lego bricks”, mix-and-match</li>
+<li>Particularly in software implementations <span class="citation" data-cites="wickham2016 vanderplas2018">(e.g.&nbsp;<code>ggplo2</code>, <a href="#/references" role="doc-biblioref" onclick="">Wickham 2016</a>; <code>altair</code> <a href="#/references" role="doc-biblioref" onclick="">Vanderplas et al. 2018</a>, etc…)</span></li>
+</ul></li>
+<li><em>Powerful, however, are there limits? Particularly when it comes to interactivity?</em></li>
 </ul>
 </section>
-<section id="plots-as-maps" class="slide level2">
-<h2>Plots as maps</h2>
+<section id="limits-of-independence" class="slide level2 center">
+<h2>Limits of independence</h2>
 <ul>
-<li>A plot is a map (function) from data to a graphical display (represented on computer screen/paper):</li>
+<li class="fragment"><p><em>“This system cannot produce a meaningless graphic, however. This is a strong claim, vulnerable to a single counter-example. It is a claim based on the formal rules of the system, however, not on the evaluation of specific graphics it may produce.”</em> <span class="citation" data-cites="wilkinson2012">(<a href="#/references" role="doc-biblioref" onclick="">Wilkinson 2012, 15</a>)</span></p></li>
+<li class="fragment"><p><em>“Some of the combinations of graphs and statistical methods may be degenerate or bizarre, but there is no moral reason to restrict them.”</em> <span class="citation" data-cites="wilkinson2012">(<a href="#/references" role="doc-biblioref" onclick="">Wilkinson 2012, 112</a>)</span></p></li>
+</ul>
+</section>
+<section id="lets-start-from-some-definitions" class="slide level2 center-title center">
+<h2>Let’s start from some definitions…</h2>
+</section>
+<section id="plots-as-maps-functions" class="slide level2 center">
+<h2>Plots as maps (functions)</h2>
+<ul>
+<li>A plot is a map from data to a graphical display (computer screen/paper):</li>
 </ul>
 <p><span class="math display">\[\text{Data} \to \text{Graphics}\]</span></p>
 <ul>
-<li><em>Can this map be any old function?</em>
+<li><em>Can this map be arbitrary? No</em>
 <ul>
+<li>Draw a single red square regardless of data - valid function but bad plot</li>
 <li>Plots can be misleading representations <span class="citation" data-cites="tufte2001 cairo2014">(<a href="#/references" role="doc-biblioref" onclick="">Tufte 2001</a>; <a href="#/references" role="doc-biblioref" onclick="">Cairo 2014</a>)</span></li>
 <li>Faithful plots “in the wild” exhibit many regular features</li>
 <li>Interactivity adds additional constraints</li>
 </ul></li>
 </ul>
 </section>
-<section id="plots-as-partitions" class="slide level2">
-<h2>Plots as partitions</h2>
+<section id="regular-plots" class="slide level2 center">
+<h2>Regular plots</h2>
 <ul>
-<li>Useful idea: geoms as sets, plots as <em>partitions</em>:
+<li>Useful definition (?): think about geoms as sets, plots as <em>partitions</em>:
 <ul>
 <li>A surjective collection of disjoint subsets</li>
 <li><em>= Each point, bar, or line represents a distinct set of cases/rows, and together the objects cover the whole data space (bijection)</em></li>
 </ul></li>
 </ul>
+<div style="margin-top: -30px; margin-bottom: -30px;">
 <p><span class="math display">\[\text{Data subsets} \to \text{Geometric objects}\]</span></p>
+</div>
 <ul>
 <li>Some exceptions:
 <ul>
 <li>2D KDE plots (multiple isopleths map to the same datapoints)</li>
 <li>Graphical deficiencies (e.g.&nbsp;overplotting)</li>
 </ul></li>
+<li>However, covers vast majority of classic plots</li>
 </ul>
 </section>
-<section id="plots-as-partitions-and-interactivity" class="slide level2">
+<section id="plots-as-partitions-and-interactivity" class="slide level2 center">
 <h2>Plots as partitions and interactivity</h2>
 <ul>
 <li>The (bijective) partition model is well-suited for interactive graphics</li>
-<li>Provides unambiguous visual mapping in linked selection:
+<li>Provides clear visual mapping in linked selection:
 <ul>
 <li><em>If I click a bar in a plot, only that bar gets highlighted</em> <br> (not the case with non-disjoint data subsets)</li>
 </ul></li>
 </ul>
 
 <img data-src="presentation_files/figure-revealjs/unnamed-chunk-1-1.png" class="quarto-figure quarto-figure-center r-stretch" width="4500"><ul>
-<li>Also useful for querying: geom/subset information is independent</li>
+<li>Also useful for e.g.&nbsp;querying: geom/subset information is independent</li>
 </ul>
 </section>
-<section id="plots-summaries-and-aesthetics" class="slide level2">
+<section id="plots-summaries-and-aesthetics" class="slide level2 center">
 <h2>Plots, summaries, and aesthetics</h2>
 <ul>
 <li>We rarely plot raw data: instead, we often summarize/aggregate</li>
@@ -254,7 +305,7 @@ Adam Bartonicek
 <li><em>The domains/codomains of these maps often have structure which the maps may or may not preserve</em></li>
 </ul>
 </section>
-<section id="example-stacking-1" class="slide level2">
+<section id="example-stacking-1" class="slide level2 center">
 <h2>Example: Stacking 1</h2>
 <ul>
 <li>The data partition can have a hierarchical structure
@@ -265,11 +316,11 @@ Adam Bartonicek
 </ul></li>
 <li>The map should preserve this underlying structure
 <ul>
-<li>I.e. aggregation and encoding also need to be structure-preserving</li>
+<li>I.e. aggregation and encoding also need to align with the hierarchical structure</li>
 </ul></li>
 </ul>
 </section>
-<section id="example-stacking-2" class="slide level2">
+<section id="example-stacking-2" class="slide level2 center">
 <h2>Example: Stacking 2</h2>
 <ul>
 <li>Suppose:</li>
@@ -285,34 +336,33 @@ Adam Bartonicek
 </div>
 
 <img data-src="presentation_files/figure-revealjs/unnamed-chunk-2-1.png" class="quarto-figure quarto-figure-center r-stretch" width="225"></section>
-<section id="example-stacking-3" class="slide level2">
+<section id="example-stacking-3" class="slide level2 center">
 <h2>Example: Stacking 3</h2>
 <ul>
 <li>The mapping should preserve salient visual properties</li>
 <li>E.g. bar height:</li>
 </ul>
 <div style="margin-top: -15px; margin-bottom: -15px; font-size: 90%;">
-<p><span class="math display">\[\text{Height(Bar subset)} = \text{Height(Stack(Blue subset, Red subset))}\]</span></p>
+<p><span class="math display">\[\text{Height(Plot(Bar subset))} = \text{Height(Stack(Plot(Blue subset), Plot(Red subset)))}\]</span></p>
 </div>
 <ul>
 <li>Not always the case:
 <ul>
-<li><em>“Stacking bars that represent counts, sums, or percentages is fine, but a stacked bar chart where bars show average values is generally meaningless.” <span class="citation" data-cites="wills2011">(<a href="#/references" role="doc-biblioref" onclick="">Wills 2011, 112</a>)</span></em></li>
+<li><em>“Stacking bars that represent counts, sums, or percentages is fine,<br> but a stacked bar chart where bars show average values is generally meaningless.” <span class="citation" data-cites="wills2011">(<a href="#/references" role="doc-biblioref" onclick="">Wills 2011, 112</a>)</span></em></li>
 <li><em>Why</em> is it meaningless? And <em>when</em>?</li>
 </ul></li>
 </ul>
 </section>
-<section id="category-theory-and-functors" class="slide level2">
+<section id="category-theory-and-functors" class="slide level2 center">
 <h2>Category theory and functors</h2>
 <ul>
 <li>Category theory is an area of math concerned with structure and composition <span class="citation" data-cites="fong2019">(<a href="#/references" role="doc-biblioref" onclick="">Fong and Spivak 2019</a>)</span></li>
-<li>Fundamental concept: a <em>functor</em></li>
-<li>Functors are a generalization of structure-preserving maps</li>
-<li>Specifically, functors preserve function composition:</li>
+<li>Fundamental concept: a <em>functor</em>, generalization of structure-preserving maps</li>
+<li>Functors preserve function composition:</li>
 </ul>
 <p><span class="math display">\[F(f ; g) = F(f) ; F(g)\]</span></p>
 </section>
-<section id="functors-and-visualization" class="slide level2">
+<section id="functors-and-visualization" class="slide level2 center">
 <h2>Functors and visualization</h2>
 <ul>
 <li>In our case, we can think of <span class="math inline">\(f\)</span> and <span class="math inline">\(g\)</span> as union with some fixed set
@@ -326,54 +376,53 @@ Adam Bartonicek
 <p><span class="math display">\[F(f ; g) = F(f) ; F(g)\]</span></p>
 </div>
 <ul>
-<li>Translates to e.g.:</li>
+<li>Translates to:</li>
 </ul>
 <div style="margin-top: -15px; margin-bottom: -15px; font-size: 90%;">
-<p><span class="math display">\[\text{stack}(\text{sum}(A \cup B)) = \text{stack}(\text{sum}(A), \text{sum}(B))\]</span></p>
+<p><span class="math display">\[\text{plot}(\text{summarize}(A \cup B)) = \text{plot}(\text{summarize}(A), \text{summarize}(B))\]</span></p>
 </div>
 </section>
-<section id="functorial-summaries-and-monoids" class="slide level2">
+<section id="functorial-summaries-and-monoids" class="slide level2 center">
 <h2>Functorial summaries and monoids</h2>
 <ul>
-<li>Original idea: model plots as <em>partitions</em>
-<ul>
-<li>Geoms as disjoint sets</li>
-</ul></li>
-<li>If we start from this, we can make use of <em>monoid</em>s</li>
-<li>A monoid <span class="math inline">\((M, e, \otimes)\)</span> is a set <span class="math inline">\(M\)</span> equipped with a neutral element <span class="math inline">\(e\)</span> and an associative binary operation <span class="math inline">\(\otimes\)</span></li>
-<li>It is easy to show that aggregating with a monoid is a functor from a partition category to a category of summaries (preserves set union)
+<li>Functors let us reason about structure-preserving plots</li>
+<li>Starting from the <em>plots as partitions</em> model, we can be ever more precise</li>
+<li>We can show that the fundamental structure is a <em>monoid</em>: a set equipped with an associative binary operation and a neutral element</li>
+<li>Then, aggregation is a functor from the partition category to the category of summaries (preserves set union)
 <ul>
 <li>Known in parallel computing and relational database research <span class="citation" data-cites="parent2018 fegaras2017 lin2013 gibbons2018">(<a href="#/references" role="doc-biblioref" onclick="">Parent 2018</a>; <a href="#/references" role="doc-biblioref" onclick="">Fegaras 2017</a>; <a href="#/references" role="doc-biblioref" onclick="">Lin 2013</a>; <a href="#/references" role="doc-biblioref" onclick="">Gibbons et al. 2018</a>)</span></li>
 </ul></li>
 </ul>
 </section>
-<section id="preserving-properties" class="slide level2">
-<h2>Preserving properties</h2>
+<section id="monoids-groups-and-beyond" class="slide level2 center">
+<h2>Monoids, groups, and beyond</h2>
 <ul>
-<li>However, perhaps we want plots to be more than just <em>any</em> function</li>
-<li>Maps can preserve or fail to preserve certain properties</li>
-<li>If partition is the fundamental model, then the mapping (plot) should preserve the properties of sets and set operations</li>
-<li>Statistics and graphics should behave like sets</li>
+<li>Monoids are fundamental for modeling geoms as sets under union</li>
+<li>To preserve other properties, we need more structure</li>
+<li>For instance, to preserve set difference, the operation needs to have an inverse:
+<ul>
+<li>Algebraic <em>groups</em> (i.e.&nbsp;the ones from group theory)</li>
+<li>Practical impact on interactive graphics: monoids are enough for showing <em>single-subset</em> linked selection, groups necessary for showing selection of <em>multiple independent groups</em></li>
+<li>Comparing <span class="math inline">\(A\)</span> vs.&nbsp;<span class="math inline">\(A \cup B\)</span>, or comparing <span class="math inline">\(A\)</span> vs.&nbsp;<span class="math inline">\(B\)</span> directly</li>
+</ul></li>
+<li>Other properties: monotonicity, commutativity, etc…</li>
 </ul>
 </section>
-<section id="set-union-and-associativity" class="slide level2">
-<h2>Set union and associativity</h2>
+<section id="closing-thoughts" class="slide level2 center">
+<h2>Closing thoughts…</h2>
 <ul>
-<li>One fundamental thing we can do with sets is to merge them (union)</li>
-<li>Set union has several important properties, including associativity:</li>
-</ul>
-<p><span class="math display">\[A \cup (B \cup C) = (A \cup B) \cup C = A \cup B \cup C\]</span></p>
+<li>Components of graphics are not independent, but instead deeply linked</li>
+<li>Missing link in GoG, can be described using the language of category theory</li>
+<li>Most novel contribution, many interesting applied problems as well:
 <ul>
-<li><em>“If we gather up the stuff contained in several sets, we end up with the same result regardless of what order we do it in”</em></li>
+<li>Features: interactive and otherwise</li>
+<li>Data visualization pipeline: reactivity, hierarchical summaries, scales, etc…</li>
+<li>Architecture and programming paradigm</li>
+</ul></li>
 </ul>
 </section>
-<section id="preserving-set-union" class="slide level2">
-<h2>Preserving set union</h2>
-<ul>
-<li>If we want to interpret the geometric objects in our plots as sets, they need to preserve associativity</li>
-<li>To do this, not just the geometric objects but also the underlying summaries need to be associative</li>
-<li>Counterexample: stacking</li>
-</ul>
+<section id="feel-lucky-to-have-stumbled-upon-an-interesting-topic-a-lot-of-room-for-future-work" class="slide level2 center">
+<h2>Feel lucky to have stumbled upon an interesting topic, a lot of room for future work</h2>
 </section>
 <section id="references" class="slide level2 smaller scrollable">
 <h2>References</h2>
@@ -402,6 +451,15 @@ Tufte, Edward R. 2001. <em>The Visual Display of Quantitative Information</em>. 
 </div>
 <div id="ref-urbanek2011" class="csl-entry" role="listitem">
 Urbanek, Simon. 2011. <span>“iPlots eXtreme: Next-Generation Interactive Graphics Design and Implementation of Modern Interactive Graphics.”</span> <em>Computational Statistics</em> 26 (3): 381–93.
+</div>
+<div id="ref-urbanek2003" class="csl-entry" role="listitem">
+Urbanek, Simon, and Martin Theus. 2003. <span>“iPlots: High Interaction Graphics for r.”</span> In <em>Proceedings of the 3rd International Workshop on Distributed Statistical Computing</em>. Citeseer.
+</div>
+<div id="ref-vanderplas2018" class="csl-entry" role="listitem">
+Vanderplas, Jacob, Brian Granger, Jeffrey Heer, Dominik Moritz, Kanit Wongsuphasawat, Arvind Satyanarayan, Eitan Lees, Ilia Timofeev, Ben Welsh, and Scott Sievert. 2018. <span>“Altair: Interactive Statistical Visualizations for Python.”</span> <em>Journal of Open Source Software</em> 3 (32): 1057.
+</div>
+<div id="ref-wickham2016" class="csl-entry" role="listitem">
+Wickham, Hadley. 2016. <em>Ggplot2: Elegant Graphics for Data Analysis (2e)</em>. Springer-Verlag New York. <a href="https://ggplot2.tidyverse.org">https://ggplot2.tidyverse.org</a>.
 </div>
 <div id="ref-wilkinson2012" class="csl-entry" role="listitem">
 Wilkinson, Leland. 2012. <em>The Grammar of Graphics</em>. Springer.
@@ -496,7 +554,7 @@ Wills, Graham. 2011. <em>Visualizing Time: Designing Graphical Representations f
         disableLayout: false,
 
         // Vertical centering of slides
-        center: false,
+        center: true,
 
         // Enables touch navigation on devices with touch input
         touch: true,
