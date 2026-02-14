@@ -42,15 +42,15 @@ bibliography: references.bib
 ## Split in interactive graphics
 
 -   **"Classical" IDV systems (~1980-2010s)**
-    - Standalone apps
+    - Designed for data exploration
     - Deep interactivity (linked selection, parametric interaction, tours,...) 
     - Less flexible, nominal style: *scatterplot, barplot, ...*
 -   **Modern web-based IDV systems (2005-current)** 
-    - Focus on dashboards, presentation
+    - Focus on presentation, dashboards
     - Highly customizable but less interactivity out-of-the-box
-    - Compositional style: *plot with point geometry and continuous x- and y- encodings...* 
+    - Compositional style: *plot with point geometry and continuous x- and y- encodings...* (inspired by GoG)
     
-## *Why is it so hard to combine flexibility with deep interactive features?* {.center-title}
+## *Why is it difficult to combine deep interactive features with the flexibility of GoG?* {.center-title}
 
 ## The Grammar of Graphics and independence
 
@@ -59,9 +59,10 @@ bibliography: references.bib
 - Components treated as (semi-)independent
   - "Lego bricks", mix-and-match
   - Particularly in software implementations [e.g. `ggplo2`, @wickham2016; `altair` @vanderplas2018, etc...]
-- *Powerful, however, are there limits? Particularly when it comes to interactivity?*
+- *Poweful, plots can be specified via simple declarative schemas*
+- *However, are there limits?*
 
-## Limits of independence
+## Gaps in the Grammar
 
 :::{.incremental}
 - *"This system cannot produce a meaningless graphic, however. This is a strong claim, vulnerable to a single counter-example. It is a claim based on the formal rules of the system, however, not on the evaluation of specific graphics it may produce."* [@wilkinson2012, pp. 15]
@@ -84,9 +85,9 @@ $$\text{Data} \to \text{Graphics}$$
   - Faithful plots "in the wild" exhibit many regular features
   - Interactivity adds additional constraints
 
-## Regular plots
+## Going further: Plots as partitions
 
-- Useful definition (?): think about geoms as sets, plots as *partitions*:
+- Useful idea: plots as *partitions*:
     -   A surjective collection of disjoint subsets
     -   *= Each point, bar, or line represents a distinct set of cases/rows, and together the objects cover the whole data space (bijection)*
 
@@ -99,7 +100,7 @@ $$\text{Data subsets} \to \text{Geometric objects}$$
     -   Graphical deficiencies (e.g. overplotting)
 - However, covers vast majority of classic plots
 
-## Plots as partitions and interactivity
+## Partitions and interactivity
 
 - The (bijective) partition model is well-suited for interactive graphics
 - Provides clear visual mapping in linked selection:
@@ -166,16 +167,16 @@ $$\text{Data subsets} \to \text{Summaries} \to \text{Aesthetics} \to \text{Geome
 
 - *The domains/codomains of these maps often have structure which the maps may or may not preserve*
 
-## Example: Stacking 1
+## Example: Stacking
 
 - The data partition can have a hierarchical structure
   - = Data subsets made up of smaller subsets
   - E.g. stacked bar made up of segments, pie chart
-  - *Not purely visual* - segments represent data information
+  - *Not purely visual* - segments represent data
 - The map should preserve this underlying structure
   - I.e. aggregation and encoding also need to align with the hierarchical structure
 
-## Example: Stacking 2
+## 
 
 - Suppose: 
 
@@ -201,7 +202,7 @@ ggplot(mtcars, aes(cyl, mpg, fill = am)) +
   guides(fill = "none") 
 ```
 
-## Example: Stacking 3
+##
 
 - The mapping should preserve salient visual properties
 - E.g. bar height:
@@ -211,8 +212,28 @@ $$\text{Height(Plot(Bar subset))} = \text{Height(Stack(Plot(Blue subset), Plot(R
 :::
 
 - Not always the case:
+  - E.g. stacking means leads to malformed plots  
   - *"Stacking bars that represent counts, sums, or percentages is fine,<br> but a stacked bar chart where bars show average values is generally meaningless." [@wills2011, p. 112]*
-  - *Why* is it meaningless? And *when*?  
+- *Only* sums and counts? *Why* can we stack some statistics but not others?
+  
+## Child FEV: Barplot of maximums
+
+```{r}
+fev <- read.csv("./fev.csv")
+fev$smoke <- factor(fev$smoke, labels = c("No", "Yes"))
+fev2 <- aggregate(fev ~ age + smoke, FUN = max, data = fev)
+
+theme_set(
+  theme_bw(base_size = 14) + theme(
+    panel.grid = element_blank(),
+    axis.ticks = element_blank()
+  ))
+
+ggplot(fev2, aes(age, fev, fill = smoke)) +
+  geom_bar(stat = "identity", position = "identity", col = "white") +
+  scale_fill_manual(values=c("grey80", "steelblue")) +
+  labs(x = "Age", y = "Max FEV", fill = "Smoke")
+```
 
 ## Category theory and functors
 
@@ -262,7 +283,7 @@ $$\text{plot}(\text{summarize}(A \cup B)) = \text{plot}(\text{summarize}(A), \te
 - Can be formally described using category theory ("missing link") 
 - Most novel contribution, many interesting applied problems as well:
   - Features: interactive and otherwise
-  - Data visualization pipeline: reactivity, paritioning, summaries, scales, etc... 
+  - Data visualization pipeline: reactivity, partitioning, summaries, scales, etc... 
   - Architecture and programming paradigms  
 
 ## References
