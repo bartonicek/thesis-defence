@@ -34,7 +34,7 @@ bibliography: references.bib
 - Master's thesis: implement a portable interactive data visualization library in JS for R, building on `iplots` [@urbanek2003; @urbanek2011]
 - Wanted to incorporate Grammar of Graphics [GoG, @wilkinson2012]
 - Also had interest in functional programming at the time
-  - Realized there are some important parallels
+  - Realized there are parallel concerns
 - This eventually lead me to category theory [@fong2019]
 
 ## The motivating problem... {.center-title}
@@ -43,13 +43,13 @@ bibliography: references.bib
 
 -   **"Classical" IDV systems (~1980-2010s)**
     - Standalone apps
-    - Deep interactivity (e.g. linked selection, parametric interaction, tours,...) 
+    - Deep interactivity (linked selection, parametric interaction, tours,...) 
     - Less flexible, nominal style: *scatterplot, barplot, ...*
 -   **Modern web-based IDV systems (2005-current)** 
     - Focus on dashboards, presentation
     - Highly customizable but less interactivity out-of-the-box
-    - Compositional style: *plot with continuous x- and y- encodings and point geometry ...* (GoG-based)
-
+    - Compositional style: *plot with point geometry and continuous x- and y- encodings...* 
+    
 ## *Why is it so hard to combine flexibility with deep interactive features?* {.center-title}
 
 ## The Grammar of Graphics and independence
@@ -239,35 +239,30 @@ $$F(f ; g) = F(f) ; F(g)$$
 $$\text{plot}(\text{summarize}(A \cup B)) = \text{plot}(\text{summarize}(A), \text{summarize}(B))$$
 :::
 
-## Functorial summaries and monoids
+##
+
+![](diagram.png){fig-align="center"}
+
+## Functors, groups, monoids, and beyond
 
 - Functors let us reason about structure-preserving plots
-- Starting from the *plots as partitions* model, we can be ever more precise
-- We can show that the fundamental structure is a *monoid*: a set equipped with an associative binary operation and a neutral element
-- Then, aggregation is a functor from the partition category to the category of summaries (preserves set union)
-  - Known in parallel computing and relational database research [@parent2018; @fegaras2017; @lin2013; @gibbons2018]
-
-## Monoids, groups, and beyond
-
-- Monoids are fundamental for modeling geoms as sets under union
-- To preserve other properties, we need more structure
-- For instance, to preserve set difference, the operation needs to have an inverse: 
-  - Algebraic *groups* (i.e. the ones from group theory)
-  - Practical impact on interactive graphics: monoids are enough for showing *single-subset* linked selection, groups necessary for showing selection of *multiple independent groups* 
-  - Comparing $A$ vs. $A \cup B$, or comparing $A$ vs. $B$ directly
-- Other properties: monotonicity, commutativity, etc...
+- Depends on what structure we want to preserve:
+  - Set union: *monoids* (set + binary associative operation + empty element)
+      - Parallel computing and RDB research [@parent2018; @fegaras2017; @lin2013; @gibbons2018]
+  - Set difference: *groups* (monoid + inverse)
+- Practical impact on interactive graphics:
+  - Monoids for comparing subsets, *single-subset* selection ($A$ vs $A \cup B$)
+  - Groups for comparing disjoint sets, *multi-group selection* ($A$ vs $B$)
+- Other properties of set operations: monotonicity, commutativity, etc...
   
 ## Closing thoughts...
 
-- Components of graphics are not independent, but instead deeply linked
-- Missing link in GoG, can be described using the language of category theory 
+- What we can *do* with a plot is determined by what the plot *is*
+- Plot components are not independent, but have (hierarchical) dependencies
+- Can be formally described using category theory ("missing link") 
 - Most novel contribution, many interesting applied problems as well:
   - Features: interactive and otherwise
-  - Data visualization pipeline: reactivity, hierarchical summaries, scales, etc... 
-  - Architecture and programming paradigm  
-
-## Feel lucky to have stumbled upon an interesting topic, a lot of room for future work
-
-
+  - Data visualization pipeline: reactivity, paritioning, summaries, scales, etc... 
+  - Architecture and programming paradigms  
 
 ## References

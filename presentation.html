@@ -189,7 +189,7 @@ Adam Bartonicek
 <li>Wanted to incorporate Grammar of Graphics <span class="citation" data-cites="wilkinson2012">(GoG, <a href="#/references" role="doc-biblioref" onclick="">Wilkinson 2012</a>)</span></li>
 <li>Also had interest in functional programming at the time
 <ul>
-<li>Realized there are some important parallels</li>
+<li>Realized there are parallel concerns</li>
 </ul></li>
 <li>This eventually lead me to category theory <span class="citation" data-cites="fong2019">(<a href="#/references" role="doc-biblioref" onclick="">Fong and Spivak 2019</a>)</span></li>
 </ul>
@@ -203,14 +203,14 @@ Adam Bartonicek
 <li><strong>“Classical” IDV systems (~1980-2010s)</strong>
 <ul>
 <li>Standalone apps</li>
-<li>Deep interactivity (e.g.&nbsp;linked selection, parametric interaction, tours,…)</li>
+<li>Deep interactivity (linked selection, parametric interaction, tours,…)</li>
 <li>Less flexible, nominal style: <em>scatterplot, barplot, …</em></li>
 </ul></li>
 <li><strong>Modern web-based IDV systems (2005-current)</strong>
 <ul>
 <li>Focus on dashboards, presentation</li>
 <li>Highly customizable but less interactivity out-of-the-box</li>
-<li>Compositional style: <em>plot with continuous x- and y- encodings and point geometry …</em> (GoG-based)</li>
+<li>Compositional style: <em>plot with point geometry and continuous x- and y- encodings…</em></li>
 </ul></li>
 </ul>
 </section>
@@ -382,47 +382,43 @@ Adam Bartonicek
 <p><span class="math display">\[\text{plot}(\text{summarize}(A \cup B)) = \text{plot}(\text{summarize}(A), \text{summarize}(B))\]</span></p>
 </div>
 </section>
-<section id="functorial-summaries-and-monoids" class="slide level2 center">
-<h2>Functorial summaries and monoids</h2>
+<section id="section" class="slide level2 center">
+<h2></h2>
+
+<img data-src="diagram.png" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="functors-groups-monoids-and-beyond" class="slide level2 center">
+<h2>Functors, groups, monoids, and beyond</h2>
 <ul>
 <li>Functors let us reason about structure-preserving plots</li>
-<li>Starting from the <em>plots as partitions</em> model, we can be ever more precise</li>
-<li>We can show that the fundamental structure is a <em>monoid</em>: a set equipped with an associative binary operation and a neutral element</li>
-<li>Then, aggregation is a functor from the partition category to the category of summaries (preserves set union)
+<li>Depends on what structure we want to preserve:
 <ul>
-<li>Known in parallel computing and relational database research <span class="citation" data-cites="parent2018 fegaras2017 lin2013 gibbons2018">(<a href="#/references" role="doc-biblioref" onclick="">Parent 2018</a>; <a href="#/references" role="doc-biblioref" onclick="">Fegaras 2017</a>; <a href="#/references" role="doc-biblioref" onclick="">Lin 2013</a>; <a href="#/references" role="doc-biblioref" onclick="">Gibbons et al. 2018</a>)</span></li>
+<li>Set union: <em>monoids</em> (set + binary associative operation + empty element)
+<ul>
+<li>Parallel computing and RDB research <span class="citation" data-cites="parent2018 fegaras2017 lin2013 gibbons2018">(<a href="#/references" role="doc-biblioref" onclick="">Parent 2018</a>; <a href="#/references" role="doc-biblioref" onclick="">Fegaras 2017</a>; <a href="#/references" role="doc-biblioref" onclick="">Lin 2013</a>; <a href="#/references" role="doc-biblioref" onclick="">Gibbons et al. 2018</a>)</span></li>
 </ul></li>
-</ul>
-</section>
-<section id="monoids-groups-and-beyond" class="slide level2 center">
-<h2>Monoids, groups, and beyond</h2>
-<ul>
-<li>Monoids are fundamental for modeling geoms as sets under union</li>
-<li>To preserve other properties, we need more structure</li>
-<li>For instance, to preserve set difference, the operation needs to have an inverse:
-<ul>
-<li>Algebraic <em>groups</em> (i.e.&nbsp;the ones from group theory)</li>
-<li>Practical impact on interactive graphics: monoids are enough for showing <em>single-subset</em> linked selection, groups necessary for showing selection of <em>multiple independent groups</em></li>
-<li>Comparing <span class="math inline">\(A\)</span> vs.&nbsp;<span class="math inline">\(A \cup B\)</span>, or comparing <span class="math inline">\(A\)</span> vs.&nbsp;<span class="math inline">\(B\)</span> directly</li>
+<li>Set difference: <em>groups</em> (monoid + inverse)</li>
 </ul></li>
-<li>Other properties: monotonicity, commutativity, etc…</li>
+<li>Practical impact on interactive graphics:
+<ul>
+<li>Monoids for comparing subsets, <em>single-subset</em> selection (<span class="math inline">\(A\)</span> vs <span class="math inline">\(A \cup B\)</span>)</li>
+<li>Groups for comparing disjoint sets, <em>multi-group selection</em> (<span class="math inline">\(A\)</span> vs <span class="math inline">\(B\)</span>)</li>
+</ul></li>
+<li>Other properties of set operations: monotonicity, commutativity, etc…</li>
 </ul>
 </section>
 <section id="closing-thoughts" class="slide level2 center">
 <h2>Closing thoughts…</h2>
 <ul>
-<li>Components of graphics are not independent, but instead deeply linked</li>
-<li>Missing link in GoG, can be described using the language of category theory</li>
+<li>What we can <em>do</em> with a plot is determined by what the plot <em>is</em></li>
+<li>Plot components are not independent, but have (hierarchical) dependencies</li>
+<li>Can be formally described using category theory (“missing link”)</li>
 <li>Most novel contribution, many interesting applied problems as well:
 <ul>
 <li>Features: interactive and otherwise</li>
-<li>Data visualization pipeline: reactivity, hierarchical summaries, scales, etc…</li>
-<li>Architecture and programming paradigm</li>
+<li>Data visualization pipeline: reactivity, paritioning, summaries, scales, etc…</li>
+<li>Architecture and programming paradigms</li>
 </ul></li>
 </ul>
-</section>
-<section id="feel-lucky-to-have-stumbled-upon-an-interesting-topic-a-lot-of-room-for-future-work" class="slide level2 center">
-<h2>Feel lucky to have stumbled upon an interesting topic, a lot of room for future work</h2>
 </section>
 <section id="references" class="slide level2 smaller scrollable">
 <h2>References</h2>

@@ -1,0 +1,192 @@
+---
+title: "Evaluation Q&A"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+bibliography: references.bib
+---
+
+#### 1) How does the category theory used here relate to statistics? For example, how does using bootstrapping or permutation or simulation fit into the conceptual framework for the interactive graphics?
+
+-   In thesis, I focus on summary/descriptive statistics, not inference
+-   More broadly, very deep question, lot of ideas in [@mccullagh2002; @shiebler2021]
+-   The same way we can think about as $\text{Plot}: \text{Data} \to \text{Graphics}$:
+    -   $\text{Model}: \text{Data} \to \text{Decision}$ (Neyman-Pearson)
+    -   $\text{Model}: \text{(Data, Prior)} \to \text{Posterior}$ (Bayes)
+    -   $\text{Model}: \text{(Data, Parameters)} \to \text{Predictions}$ (Machine learning)
+-   Can be used to reason about random variables, (conditional) independence, identifiability, Bayesian updating, invariance (e.g. Jeffrey's prior), etc... [see @mccullagh2002; @shiebler2021]
+
+#### 2) How do you add summary statistics to the plots, and how would linking be achieved with different types of data layers?
+
+-   The plot itself is a (represetation of) summary statistics
+-   Additional summary statistics for querying can be added like so:
+
+```{r}
+library(plotscaper)
+
+opts <- list(
+  queries=list(
+    c("wt", "sum"),
+    c("hp", "max")
+  )
+)
+
+create_schema(mtcars) |>
+  add_scatterplot(c("wt", "mpg")) |>
+  add_barplot("cyl", options = opts) |>
+  assign_cases(1:10, 2) |>
+  render()
+
+# The extra summary statistics will now show up when querying bars
+```
+
+-   Linking automatically computes one set of summary statistics for each subset
+
+#### 3) How extensible is the system? If one wants to add a new plot type, what are the steps that are needed?
+
+-   The system is extensible on the JavaScript side (`plotscape`)
+-   Define a function which takes in options and returns a `Plot` objects
+-   E.g. definition of a lineplot in `plotscape` rewrite (not yet published):
+
+```{js}
+#| eval: false
+
+export function line(
+  options: {
+    marker: Marker;
+    dimensions: [number[], number[]] | [number[], number[], number[]];
+  } & Partial<PlotOptions>
+) {
+  const { dimensions, marker } = options;
+
+  const [x, y, group] = dimensions;
+  const factor1 = group
+    ? Factor.discrete(group)
+    : Factor.constant<{}>(x.length);
+  const factor2 = Factor.product(factor1, marker);
+
+  const r = Reducer.collect;
+  const summarizers = { x: [x, r], y: [y, r] } as const;
+  const summaries = Summaries.create([factor2] as const, summarizers);
+
+  const plot = Plot.create(options);
+  plot.addSelectData(summaries[0], encodeLines, GeomType.Lines);
+  plot.addRenderData(summaries[0], encodeLines, GeomType.Lines);
+
+  plot.setScale(`x`, (s) => Scale.split(s));
+  plot.setScale(`y`, (s) => Scale.split(s));
+  plot.trainScales();
+
+  plot.setAxisTitles({
+    x: Metadata.get(x, `name`),
+    y: Metadata.get(y, `name`),
+  });
+
+  const { incoming } = plot.events;
+
+  Events.listen(incoming, `marker-updated`, () => {
+    Factor.update(factor2);
+    Summaries.update(summaries, 0);
+    plot.render();
+  });
+
+  return plot;
+}
+
+interface SummaryData {
+  x: Reduced<unknown[]>;
+  y: Reduced<unknown[]>;
+  label?: string[];
+  layer: number[];
+}
+
+function encodeLines(data: SummaryData) {
+  const { x, y, label, layer } = data;
+  const sortfn = isNumberArray(x[0]) ? diff : compareAlphaNumeric;
+
+  // Sort by x-variable
+  for (let i = 0; i < x.length; i++) {
+    const indices = orderIndices(x[i] as any, sortfn as any);
+    x[i] = ordered(x[i], indices);
+    y[i] = ordered(y[i], indices);
+  }
+
+  Metadata.set(x, { name: Metadata.get(x, `originalName`) });
+  Metadata.set(y, { name: Metadata.get(y, `originalName`) });
+
+  const result: Dataframe = { x, y, layer };
+  if (label) result.label = label;
+
+  return result;
+}
+```
+
+-   Procedural, tried coming up with a simple declarative API on R side, unfortunately no success
+-   Reasons:
+    -   Hierarchical dependencies
+    -   Explicit definition of summaries/reducers
+    -   Hard to generalize interactive features declaratively
+-   Think the solution would be a DSL, something like simple SQL but with hierarchical encoding
+- Idea YAML for spineplot:
+
+```         
+inputs: 
+  - var1
+  - var2:
+    optional: true
+
+partition: 
+  levels: 
+    - l0: 
+      variable: var1
+      transformation: bin
+      metadata: [binmin, binmax]
+    - l1:  
+      variable: marker
+      metadata: [group]
+
+summarize:
+  stat1: 
+    - if: var2
+      then: 
+        variable: var2
+        function: sum
+    - else:
+      variable: null
+      function: count
+    
+encode:
+  type: rectangles
+  levels:
+    - l0:
+        ymin: 0
+        ymax: 1
+        xmin: 
+          variable: stat1
+          stack: true
+          shift_left: true
+        xmax: 
+          variable: stat1
+          stack: true
+    - l1:
+        ymin: 0
+        ymax: 
+          variable: stat1
+          stack: true
+          normalize: true
+        xmin: 
+          variable: stat1
+          traverse: 1
+          stack: true
+          shift_left: true
+        xmax:
+          variable: stat1
+          traverse: 1
+          stack: true
+```
+
+#### 4) Would it be possible to link the static plots to a dynamic plot, like a tour?
+
+-   Could add an option to animate a plot across time variable and apply time-dependent transformations, e.g. grand tour projection
+-   Should be orthogonal to `Marker`/linking, so hypothetically feasible
