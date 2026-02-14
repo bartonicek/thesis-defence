@@ -220,7 +220,7 @@ $$\text{Height(Plot(Bar subset))} = \text{Height(Stack(Plot(Blue subset), Plot(R
 
 ```{r}
 fev <- read.csv("./fev.csv")
-fev$smoke <- factor(fev$smoke, labels = c("No", "Yes"))
+fev$smoke <- factor(fev$smoke, labels = c("All kids", "Smokers"))
 fev2 <- aggregate(fev ~ age + smoke, FUN = max, data = fev)
 
 theme_set(
@@ -232,7 +232,7 @@ theme_set(
 ggplot(fev2, aes(age, fev, fill = smoke)) +
   geom_bar(stat = "identity", position = "identity", col = "white") +
   scale_fill_manual(values=c("grey80", "steelblue")) +
-  labs(x = "Age", y = "Max FEV", fill = "Smoke")
+  labs(x = "Age", y = "Max FEV", fill = NULL)
 ```
 
 ## Category theory and functors
